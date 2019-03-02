@@ -81,10 +81,14 @@ function catPlay() {
   catPlaying[14] = "with the dog"
   catPlaying[15] = "possum"
   catPlaying[16] = "with a cucumber"
-  catPlaying[17] = "a crab"
-  catPlaying[18] = "a fidget spinner"
+  catPlaying[17] = "with a crab"
+  catPlaying[18] = "with a fidget spinner"
   catPlaying[19] = "the accordion"
   catPlaying[20] = "flute"
+  catPlaying[21] = "Cat Simulator 2000"
+  catPlaying[22] = "Strikeforce: Kitty"
+  catPlaying[23] = "Skyrim"
+  catPlaying[24] = "Lasercat"
 
   var randomPlaying = Math.floor(Math.random() * catPlaying.length)
   var retString = catPlaying[randomPlaying]
@@ -97,63 +101,23 @@ function catReact(msg) {
   var emoji = []
   msg = msg.toLowerCase()
 
-  console.log(msg)
+  if (msg.includes("fish")) { emoji.push(randomFishEmoji()) }
+  if (msg.includes("treat")) { emoji.push(randomTreatEmoji()) }
+  if (msg.includes("rat")) { emoji.push("🐀") }
+  if (msg.includes("mouse")) { emoji.push("🐁") }
+  if (msg.includes("rabbit")) { emoji.push("🐰") }
+  if (msg.includes("bun")) { emoji.push("🐇") }
+  if (msg.includes("salad")) { emoji.push("🥗") }
+  if (msg.includes("horse")) { emoji.push("🐴") }
+  if (msg.includes("cow")) { emoji.push("🐄") }
+  if (msg.includes("bot")) { emoji.push("🤖") }
+  if (msg.includes("bull")) { emoji.push("🐃") }
+  if (msg.includes("pineapple")) { emoji.push("🍍") }
 
-  if ((msg.includes("cat")) || (msg.includes("meow"))) {
-    emoji.push(randomCatEmoji())
-  }
-
-  if (msg.includes("fish")) {
-    emoji.push(randomFishEmoji())
-  }
-
-  if (msg.includes("treat")) {
-    emoji.push(randomTreatEmoji())
-  }
-
-  if (msg.includes("rat")) {
-    emoji.push("🐀")
-  }
-
-  if (msg.includes("mouse")) {
-    emoji.push("🐁")
-  }
-
-  if (msg.includes("rabbit")) {
-    emoji.push("🐰")
-  }
-
-  if (msg.includes("bun")) {
-    emoji.push("🐇")
-  }
-
-  if ((msg.includes("squirrel")) || (msg.includes("chipmunk"))) {
-    emoji.push("🐿")
-  }
-
-  if (msg.includes("salad")) {
-    emoji.push("🥗")
-  }
-
-  if (msg.includes("horse")) {
-    emoji.push("🐴")
-  }
-
-  if (msg.includes("cow")) {
-    emoji.push("🐄")
-  }
-
-  if (msg.includes("bull")) {
-    emoji.push("🐃")
-  }
-
-  if ((msg.includes("shit")) || (msg.includes("poo"))) {
-    emoji.push("💩")
-  }
-
-  if (msg.includes("pineapple")) {
-    emoji.push("🍍")
-  }
+  if ((msg.includes("cat")) || (msg.includes("meow"))) { emoji.push(randomCatEmoji()) }
+  if ((msg.includes("squirrel")) || (msg.includes("chipmunk"))) { emoji.push("🐿") }
+  if ((msg.includes("shit")) || (msg.includes("poo")) || (msg.includes("crap"))) { emoji.push("💩") }
+  if ((msg.includes("turtle")) || (msg.includes("tortoise")) || (msg.includes("moses"))) { emoji.push("🐢") }
 
   console.log(emoji)
   return emoji
