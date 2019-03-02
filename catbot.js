@@ -114,12 +114,21 @@ function catReact(msg) {
   if (msg.includes("bot")) { emoji.push("🤖") }
   if (msg.includes("bull")) { emoji.push("🐃") }
   if (msg.includes("pineapple")) { emoji.push("🍍") }
+  if (msg.includes("squirrel")) { emoji.push("🐿") }
+  if (msg.includes("girl")) { emoji.push("🐿") }
+  if (msg.includes("chipmunk")) { emoji.push("🐿") }
+  if (msg.includes("poo")) { emoji.push("💩") }
+  if (msg.includes("shit")) { emoji.push("💩") }
+  if (msg.includes("crap")) { emoji.push("💩") }
+  if (msg.includes("turd")) { emoji.push("💩") }
+  if (msg.includes("turtle")) { emoji.push("🐢") }
+  if (msg.includes("tortoise")) { emoji.push("🐢") }
+  if (msg.includes("moses")) { emoji.push("🐢") }
+  if (msg.includes("mail")) { emoji.push("📮") }
+  if (msg.includes("post")) { emoji.push("📮") }
 
-  if ((msg.includes("cat")) || (msg.includes("meow")) || (msg.includes("kitt"))) { emoji.push(randomCatEmoji()) }
-  if ((msg.includes("squirrel")) || (msg.includes("chipmunk"))) { emoji.push("🐿") }
-  if ((msg.includes("shit")) || (msg.includes("poo")) || (msg.includes("crap"))) { emoji.push("💩") }
-  if ((msg.includes("turtle")) || (msg.includes("tortoise")) || (msg.includes("moses"))) { emoji.push("🐢") }
-
+  if ((msg.includes("cat")) && (!(msg.includes("catbot")))) { emoji.push(randomCatEmoji()) }
+  if ((msg.includes("meow")) || (msg.includes("kitt"))) { emoji.push(randomCatEmoji()) }
   console.log(emoji)
   return emoji
 }
@@ -142,11 +151,20 @@ function catReply(msg) {
   catMeow[12] = "Feed me"
   catMeow[13] = "I love lasagna"
   catMeow[14] = "I'll see you in another life, when we are both cats"
+  catMeow[15] = "Miau"
+  catMeow[16] = "Nyan"
+  catMeow[17] = "Meo"
+  catMeow[18] = "Miaou"
+  catMeow[19] = "Miao"
+  catMeow[20] = "мяу-мяу"
+  catMeow[21] = "мур-мур"
+  catMeow[22] = "Woof!"
+  catMeow[23] = "ニャー"
 
   // return a random string sometimes, but mostly meow
   var weightedOdds = Math.random()
   var randomMeow = Math.floor(Math.random() * catMeow.length)
-  if (weightedOdds > .67) {
+  if (weightedOdds > .75) {
     var retString = catMeow[randomMeow]
   } else {
     retString = "Meow"
@@ -215,10 +233,10 @@ client.on('message', (receivedMessage) => {
     if (cb_msg && (cb_msg != "do nothing")) {
 
       console.log(cb_msg)
+      var catOutput = "";
 
       // Catbot meows to all mentions of cat in the catbot channel
-      if (cb_input.includes("cat")) { receivedMessage.channel.send(cb_msg) }
-      if (cb_input.includes("kitt")) { receivedMessage.channel.send(cb_msg) }
+      if ((cb_input.includes("cat")) || (cb_input.includes("kitt"))) { receivedMessage.channel.send(cb_msg) }
 
       // It's polite to respond to meow
       if ((cb_input.includes("meow")) || (cb_input.includes("nyan")))  { receivedMessage.channel.send(cb_msg) }
@@ -227,8 +245,10 @@ client.on('message', (receivedMessage) => {
       if (cb_input == "purr") { receivedMessage.channel.send("Purrr") }
       if (cb_input == "moo") { receivedMessage.channel.send("Moooo") }
 
-      if (cb_input.includes("treat")) { receivedMessage.channel.send("🐟") }
+      if (cb_input.includes("treat")) { receivedMessage.channel.send(randomTreatEmoji()) }
+      if (cb_input.includes("fish")) { receivedMessage.channel.send(randomFishEmoji()) }
       if ((cb_input.includes("pineapple")) || (cb_input == "🍍")) { receivedMessage.channel.send("🍍") }
+      if ((cb_input.includes("mail")) || (cb_input.includes("post"))) { receivedMessage.channel.send("📮") }
 
     }
 
@@ -262,7 +282,7 @@ client.on('message', (receivedMessage) => {
   // Check if the bot's user was tagged in the message
   if (receivedMessage.content.includes(client.user.toString())) {
     // Send acknowledgement message
-    var cb_msg = catReply(receivedMessage.content)
+    var cb_msg = catReply(receivedMessage.content.toLowerCase())
     receivedMessage.channel.send(cb_msg)
   }
 })
