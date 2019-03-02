@@ -3,6 +3,7 @@ const client = new Discord.Client()
 
 const chan_general = "421090801393598466"
 const chan_catbot = "551271365508857866"
+const chan_cleverbot = "548078165936046080"
 
 function randomCatEmoji() {
 
@@ -80,8 +81,8 @@ function catPlay() {
   catPlaying[13] = "with its tail"
   catPlaying[14] = "with the dog"
   catPlaying[15] = "possum"
-  catPlaying[16] = "with a cucumber"
-  catPlaying[17] = "with a crab"
+  catPlaying[16] = "the odds"
+  catPlaying[17] = "with fire"
   catPlaying[18] = "with a fidget spinner"
   catPlaying[19] = "the accordion"
   catPlaying[20] = "flute"
@@ -89,6 +90,17 @@ function catPlay() {
   catPlaying[22] = "Strikeforce: Kitty"
   catPlaying[23] = "Skyrim"
   catPlaying[24] = "Lasercat"
+  catPlaying[25] = "Pinochle"
+  catPlaying[26] = "Bridge"
+  catPlaying[27] = "Monopoly"
+  catPlaying[28] = "Shuffleboard"
+  catPlaying[29] = "Parcheesi"
+  catPlaying[30] = "Backgammon"
+  catPlaying[31] = "Tic Tac Toe"
+  catPlaying[32] = "Snakes and Ladders"
+  catPlaying[33] = "Candyland"
+  catPlaying[34] = "Battleship"
+  catPlaying[35] = "Call of Duty"
 
   var randomPlaying = Math.floor(Math.random() * catPlaying.length)
   var retString = catPlaying[randomPlaying]
@@ -102,8 +114,10 @@ function catReact(msg) {
   var emoji = []
   msg = msg.toLowerCase()
 
+  if (msg.includes("kitt")) { emoji.push(randomCatEmoji()) }
   if (msg.includes("fish")) { emoji.push(randomFishEmoji()) }
   if (msg.includes("treat")) { emoji.push(randomTreatEmoji()) }
+  if (msg.includes("bat")) { emoji.push("🦇") }
   if (msg.includes("rat")) { emoji.push("🐀") }
   if (msg.includes("mouse")) { emoji.push("🐁") }
   if (msg.includes("rabbit")) { emoji.push("🐰") }
@@ -124,8 +138,10 @@ function catReact(msg) {
   if (msg.includes("turtle")) { emoji.push("🐢") }
   if (msg.includes("tortoise")) { emoji.push("🐢") }
   if (msg.includes("moses")) { emoji.push("🐢") }
-  if (msg.includes("mail")) { emoji.push("📮") }
+  if ((msg.includes("mail")) || (msg.includes("male"))) { emoji.push("📮") }
   if (msg.includes("post")) { emoji.push("📮") }
+  if (msg.includes("duck")) { emoji.push("🦆") }
+  if (msg.includes("fuck")) { emoji.push("🦆") }
 
   if ((msg.includes("cat")) && (!(msg.includes("catbot")))) { emoji.push(randomCatEmoji()) }
   if ((msg.includes("meow")) || (msg.includes("kitt"))) { emoji.push(randomCatEmoji()) }
@@ -165,7 +181,7 @@ function catReply(msg) {
   // return a random string sometimes, but mostly meow
   var weightedOdds = Math.random()
   var randomMeow = Math.floor(Math.random() * catMeow.length)
-  if (weightedOdds > .75) {
+  if (weightedOdds < .25) {
     var retString = catMeow[randomMeow]
   } else {
     retString = "Meow"
@@ -173,7 +189,7 @@ function catReply(msg) {
 
   // randomly do nothing, .5% chance
   var randomlyDoNothing = Math.random();
-  if (randomlyDoNothing > .95) {
+  if (randomlyDoNothing < .05) {
     console.log("Randomly did nothing... like a cat")
     retString = ""
   }
@@ -224,7 +240,7 @@ client.on('message', (receivedMessage) => {
   // console.log(receivedMessage.channel.id)
 
   // Only in the catbot channel
-  if (receivedMessage.channel.id == chan_catbot) {
+  if ((receivedMessage.channel.id == chan_catbot) || (receivedMessage.channel.id == chan_cleverbot)) {
 
     // get a message from cb
     var cb_input = receivedMessage.content.toLowerCase()
@@ -266,7 +282,7 @@ client.on('message', (receivedMessage) => {
     // occasionally meow
     if (receivedMessage.content.toLowerCase().includes("cat")) {
       var randomReply = Math.random();
-      if (randomReply > .9) {
+      if (randomReply < .1) {
         var cb_msg = catReply(receivedMessage.content)
         receivedMessage.channel.send(cb_msg)
       }
@@ -275,7 +291,7 @@ client.on('message', (receivedMessage) => {
 
   // Random global meow
   var randomGlobalReply = Math.random();
-  if (randomReply > .95) {
+  if (randomReply < .05) {
     var cb_msg = catReply(receivedMessage.content)
     receivedMessage.channel.send(cb_msg)
   }
