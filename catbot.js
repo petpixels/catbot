@@ -94,6 +94,7 @@ function catPlay() {
   var retString = catPlaying[randomPlaying]
 
   console.log(retString)
+
   client.user.setActivity(retString)
 }
 
@@ -114,7 +115,7 @@ function catReact(msg) {
   if (msg.includes("bull")) { emoji.push("🐃") }
   if (msg.includes("pineapple")) { emoji.push("🍍") }
 
-  if ((msg.includes("cat")) || (msg.includes("meow"))) { emoji.push(randomCatEmoji()) }
+  if ((msg.includes("cat")) || (msg.includes("meow")) || (msg.includes("kitt"))) { emoji.push(randomCatEmoji()) }
   if ((msg.includes("squirrel")) || (msg.includes("chipmunk"))) { emoji.push("🐿") }
   if ((msg.includes("shit")) || (msg.includes("poo")) || (msg.includes("crap"))) { emoji.push("💩") }
   if ((msg.includes("turtle")) || (msg.includes("tortoise")) || (msg.includes("moses"))) { emoji.push("🐢") }
@@ -124,55 +125,31 @@ function catReact(msg) {
 }
 
 function catReply(msg) {
-  var input_msg = msg.toString().toLowerCase();
 
   var catMeow = []
-  catMeow[0] = "Meow"
-  catMeow[1] = "Meow"
-  catMeow[2] = "Meow"
-  catMeow[3] = "Meow"
-  catMeow[4] = "Meow"
-  catMeow[5] = "Meow"
-  catMeow[6] = "Meow"
-  catMeow[7] = "Meow"
-  catMeow[8] = "Meow"
-  catMeow[9] = "Meow?"
-  catMeow[10] = "Purrrr"
-  catMeow[11] = "Mew"
-  catMeow[12] = "Mewtwo"
-  catMeow[13] = "Mrrrrow"
-  catMeow[14] = "Maowow"
-  catMeow[15] = "Mrrrrrreow"
-  catMeow[16] = "Ring-ding-ding-ding-dingeringeding! Wa-pa-pa-pa-pa-pa-pow!"
-  catMeow[17] = "You have cat to be kitten me"
-  catMeow[18] = "Prrrrrrrrr"
-  catMeow[19] = "Moo"
-  catMeow[20] = "Meow"
-  catMeow[21] = "Meow"
-  catMeow[22] = "Meow"
-  catMeow[23] = "Meow"
-  catMeow[24] = "Meow"
-  catMeow[25] = "Meow"
-  catMeow[26] = "Meow"
-  catMeow[27] = "Meow"
-  catMeow[28] = "Meow"
-  catMeow[29] = "Meow?"
+  catMeow[0]  = "Meow?"
+  catMeow[1]  = "Purrrr"
+  catMeow[2]  = "Mew"
+  catMeow[3]  = "Mewtwo"
+  catMeow[4]  = "Mrrrrow"
+  catMeow[5]  = "Maowow"
+  catMeow[6]  = "Mrrrrrreow"
+  catMeow[7]  = "Ring-ding-ding-ding-dingeringeding! Wa-pa-pa-pa-pa-pa-pow!"
+  catMeow[8]  = "You have cat to be kitten me"
+  catMeow[9]  = "Prrrrrrrrr"
+  catMeow[10] = "Moo"
+  catMeow[11] = "I hate Mondays"
+  catMeow[12] = "Feed me"
+  catMeow[13] = "I love lasagna"
+  catMeow[14] = "I'll see you in another life, when we are both cats"
 
+  // return a random string sometimes, but mostly meow
+  var weightedOdds = Math.random()
   var randomMeow = Math.floor(Math.random() * catMeow.length)
-  var retString = catMeow[randomMeow]
-
-  console.log(input_msg)
-
-  if (input_msg == "purr") {
-    retString = "Purr"
-  }
-
-  if (input_msg == "moo") {
-    retString = "Mooo"
-  }
-
-  if (input_msg == "🍍") {
-    retString = "🍍"
+  if (weightedOdds > .67) {
+    var retString = catMeow[randomMeow]
+  } else {
+    retString = "Meow"
   }
 
   // randomly do nothing, .5% chance
@@ -182,7 +159,6 @@ function catReply(msg) {
     retString = ""
   }
 
-  console.log(retString)
   return retString
 }
 
@@ -230,22 +206,34 @@ client.on('message', (receivedMessage) => {
 
   // Only in the catbot channel
   if (receivedMessage.channel.id == chan_catbot) {
-    // Catbot meows to all mentions of cat in the catbot channel
-    if (receivedMessage.content.toLowerCase().includes("cat")) {
-      var cb_msg = catReply(receivedMessage.content)
-      receivedMessage.channel.send(cb_msg)
+
+    // get a message from cb
+    var cb_input = receivedMessage.content.toLowerCase()
+    var cb_msg = catReply(receivedMessage.content)
+
+    // message cannot be blank
+    if (cb_msg && (cb_msg != "do nothing")) {
+
+      console.log(cb_msg)
+
+      // Catbot meows to all mentions of cat in the catbot channel
+      if (cb_input.includes("cat")) { receivedMessage.channel.send(cb_msg) }
+      if (cb_input.includes("kitt")) { receivedMessage.channel.send(cb_msg) }
+
+      // It's polite to respond to meow
+      if ((cb_input.includes("meow")) || (cb_input.includes("nyan")))  { receivedMessage.channel.send(cb_msg) }
+
+      // Manual overrides (catbot commands):
+      if (cb_input == "purr") { receivedMessage.channel.send("Purrr") }
+      if (cb_input == "moo") { receivedMessage.channel.send("Moooo") }
+
+      if (cb_input.includes("treat")) { receivedMessage.channel.send("🐟") }
+      if ((cb_input.includes("pineapple")) || (cb_input == "🍍")) { receivedMessage.channel.send("🍍") }
+
     }
 
-    if (receivedMessage.content.toLowerCase().includes("meow")) {
-      var cb_msg = catReply(receivedMessage.content)
-      receivedMessage.channel.send(cb_msg)
-    }
-
-    if (receivedMessage.content.toLowerCase().includes("treat")) {
-      var cb_treat = randomTreatEmoji()
-      receivedMessage.channel.send(cb_treat)
-    }
   } else {
+
     // React to "cat" in messages outside of the catbot channel
     var catEmoji = catReact(receivedMessage.content)
     if (catEmoji) {
