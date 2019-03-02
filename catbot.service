@@ -1,0 +1,13 @@
+[Unit]
+Description=CatBot
+
+[Service]
+PIDFile=/tmp/catbot-99.pid
+User=catbot
+Group=catbot
+Restart=always
+KillSignal=SIGQUIT
+WorkingDirectory=/home/root/catbot/
+ExecStart=/home/root/catbot/catbot.js
+[Install]
+WantedBy=multi-user.target

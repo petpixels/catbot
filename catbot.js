@@ -131,17 +131,32 @@ function catReact(msg) {
     emoji.push("🐿")
   }
 
+  if (msg.includes("salad")) {
+    emoji.push("🥗")
+  }
+
+  if (msg.includes("horse")) {
+    emoji.push("🐴")
+  }
+
+  if (msg.includes("cow")) {
+    emoji.push("🐄")
+  }
+
+  if (msg.includes("bull")) {
+    emoji.push("🐃")
+  }
+
   if (msg.includes("pineapple")) {
     emoji.push("🍍")
   }
-
 
   console.log(emoji)
   return emoji
 }
 
 function catReply(msg) {
-  var input_msg = msg.toLowerCase();
+  var input_msg = msg.toString().toLowerCase();
 
   var catMeow = []
   catMeow[0] = "Meow"
@@ -182,6 +197,10 @@ function catReply(msg) {
 
   if (input_msg == "purr") {
     retString = "Purr"
+  }
+
+  if (input_msg == "moo") {
+    retString = "Mooo"
   }
 
   if (input_msg == "🍍") {
@@ -233,74 +252,62 @@ client.on('messageEdit', (receivedMessage) => {
 })
 
 client.on('message', (receivedMessage) => {
-    // Prevent bot from responding to its own messages
-    if (receivedMessage.author == client.user) {
-        return
-    }
+  // Prevent bot from responding to its own messages
+  if (receivedMessage.author == client.user) {
+    return
+  }
 
-    // console.log(receivedMessage.channel.id)
-    // restrict to catbot channel
+  // console.log(receivedMessage.channel.id)
 
-    if (receivedMessage.channel.id == chan_catbot) {
-      // Catbot meows to all mentions of cat in the catbot channel
-      if (receivedMessage.content.toLowerCase().includes("cat")) {
-        var cb_msg = catReply(receivedMessage.content)
-        receivedMessage.channel.send(cb_msg)
-      }
-
-      if (receivedMessage.content.toLowerCase().includes("meow")) {
-        var cb_msg = catReply(receivedMessage.content)
-        receivedMessage.channel.send(cb_msg)
-      }
-
-      if (receivedMessage.content.toLowerCase().includes("treat")) {
-        var cb_treat = randomTreatEmoji()
-        receivedMessage.channel.send(cb_treat)
-      }
-    }
-
-
-    // catbot reacts to "cat" in messages outside of the catbot channel
+  // Only in the catbot channel
+  if (receivedMessage.channel.id == chan_catbot) {
+    // Catbot meows to all mentions of cat in the catbot channel
     if (receivedMessage.content.toLowerCase().includes("cat")) {
-      if (!(receivedMessage.channel.id == chan_catbot)) {
-
-        // occasionally meow
-        var randomReply = Math.random();
-        if (randomReply > .9) {
-          var cb_msg = catReply(receivedMessage.content)
-          receivedMessage.channel.send(cb_msg)
-        }
-      }
-    }
-
-    // Cat Reaction outside of catbot channel
-
-    // if (receivedMessage.channel.id != chan_catbot) {
-      var catEmoji = catReact(receivedMessage.content)
-      console.log(catEmoji)
-      if (catEmoji) {
-        for (var i = 0; i < catEmoji.length; i++) {
-          receivedMessage.react(catEmoji[i])
-        }
-      }
-    // }
-
-    // Random global meow
-    var randomGlobalReply = Math.random();
-    if (randomReply > .95) {
       var cb_msg = catReply(receivedMessage.content)
       receivedMessage.channel.send(cb_msg)
     }
 
-    // Check if the bot's user was tagged in the message
-    if (receivedMessage.content.includes(client.user.toString())) {
-      // Send acknowledgement message
+    if (receivedMessage.content.toLowerCase().includes("meow")) {
       var cb_msg = catReply(receivedMessage.content)
       receivedMessage.channel.send(cb_msg)
     }
 
+    if (receivedMessage.content.toLowerCase().includes("treat")) {
+      var cb_treat = randomTreatEmoji()
+      receivedMessage.channel.send(cb_treat)
+    }
+  } else {
+    // React to "cat" in messages outside of the catbot channel
+    var catEmoji = catReact(receivedMessage.content)
+    if (catEmoji) {
+      for (var i = 0; i < catEmoji.length; i++) {
+        receivedMessage.react(catEmoji[i])
+      }
+    }
 
+    // occasionally meow
+    if (receivedMessage.content.toLowerCase().includes("cat")) {
+      var randomReply = Math.random();
+      if (randomReply > .9) {
+        var cb_msg = catReply(receivedMessage.content)
+        receivedMessage.channel.send(cb_msg)
+      }
+    }
+  }
 
+  // Random global meow
+  var randomGlobalReply = Math.random();
+  if (randomReply > .95) {
+    var cb_msg = catReply(receivedMessage.content)
+    receivedMessage.channel.send(cb_msg)
+  }
+
+  // Check if the bot's user was tagged in the message
+  if (receivedMessage.content.includes(client.user.toString())) {
+    // Send acknowledgement message
+    var cb_msg = catReply(receivedMessage.content)
+    receivedMessage.channel.send(cb_msg)
+  }
 })
 
 // Get your bot's secret token from:
