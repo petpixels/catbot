@@ -147,6 +147,10 @@ function catReact(msg) {
     emoji.push("🐃")
   }
 
+  if ((msg.includes("shit")) || (msg.includes("poo"))) {
+    emoji.push("💩")
+  }
+
   if (msg.includes("pineapple")) {
     emoji.push("🍍")
   }
@@ -253,6 +257,7 @@ client.on('messageEdit', (receivedMessage) => {
 
 client.on('message', (receivedMessage) => {
   // Prevent bot from responding to its own messages
+
   if (receivedMessage.author == client.user) {
     return
   }
@@ -313,5 +318,5 @@ client.on('message', (receivedMessage) => {
 // Get your bot's secret token from:
 // https://discordapp.com/developers/applications/
 // Click on your application -> Bot -> Token -> "Click to Reveal Token"
-bot_secret_token = "NTUxMjYzMzYzODg0MTIyMTIy.D1ucgQ.mEdKNLgLkufvOyHjUHieLfxvByo"
+bot_secret_token = "NTUxMjYzMzYzODg0MTIyMTIy.D1vn8Q.GPZqVzIqseOyhWqiM72vZ22qejs"
 client.login(bot_secret_token)
