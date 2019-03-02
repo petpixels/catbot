@@ -160,6 +160,7 @@ function catReply(msg) {
   catMeow[21] = "мур-мур"
   catMeow[22] = "Woof!"
   catMeow[23] = "ニャー"
+  catMeow[24] = catReact(msg)
 
   // return a random string sometimes, but mostly meow
   var weightedOdds = Math.random()
