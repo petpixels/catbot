@@ -100,7 +100,7 @@ function catReact(msg) {
   }
 
   if (msg.includes("treat")) {
-    // emoji.push(randomTreatEmoji())
+    emoji.push(randomTreatEmoji())
   }
 
   console.log(emoji)
@@ -165,6 +165,12 @@ client.on('ready', () => {
     //catbotChannel.send("Meow")
 })
 
+client.on('messageDelete', (receivedMessage) => {
+  var cb_msg = catReply(receivedMessage.content)
+  receivedMessage.channel.send(cb_msg)
+  console.log('deleted');
+})
+
 client.on('message', (receivedMessage) => {
     // Prevent bot from responding to its own messages
     if (receivedMessage.author == client.user) {
@@ -201,13 +207,23 @@ client.on('message', (receivedMessage) => {
       }
     }
 
-    // Cat Reaction
-    var catEmoji = catReact(receivedMessage.content)
-    console.log(catEmoji)
-    if (catEmoji) {
-      for (var i = 0; i < catEmoji.length; i++) {
-        receivedMessage.react(catEmoji[i])
+    // Cat Reaction outside of catbot channel
+
+    if (receivedMessage.channel.id != chan_catbot) {
+      var catEmoji = catReact(receivedMessage.content)
+      console.log(catEmoji)
+      if (catEmoji) {
+        for (var i = 0; i < catEmoji.length; i++) {
+          receivedMessage.react(catEmoji[i])
+        }
       }
+    }
+
+    // Random global meow
+    var randomGlobalReply = Math.random();
+    if (randomReply > .95) {
+      var cb_msg = catReply(receivedMessage.content)
+      receivedMessage.channel.send(cb_msg)
     }
 
     // Check if the bot's user was tagged in the message
