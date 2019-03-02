@@ -39,6 +39,10 @@ function catPlay() {
   catPlaying[6]  = "with a ball"
   catPlaying[7]  = "with Australia"
   catPlaying[8]  = "Age of Empires II"
+  catPlaying[9]  = "with a toy mouse"
+  catPlaying[10] = "chess"
+  catPlaying[11] = "at the park"
+  catPlaying[12] = "Live at the Apollo"
 
   var randomPlaying = Math.floor(Math.random() * catPlaying.length)
   var retString = catPlaying[randomPlaying]
@@ -71,6 +75,7 @@ function catReply(msg) {
   catMeow[13] = "Mrrrrow"
   catMeow[14] = "Maowow"
   catMeow[15] = "Mrrrrrreow"
+  catMeow[16] = "Ring-ding-ding-ding-dingeringeding! Wa-pa-pa-pa-pa-pa-pow!"
 
   var randomMeow = Math.floor(Math.random() * catMeow.length)
   var retString = catMeow[randomMeow]
@@ -118,10 +123,27 @@ client.on('message', (receivedMessage) => {
     // restrict to catbot channel
 
     if (receivedMessage.channel.id == chan_catbot) {
-      var randomEmoji = catReact()
-      console.log(randomEmoji)
-      receivedMessage.react(randomEmoji)
-      // receivedMessage.channel.send("Meow")
+      // Catbot meows to all mentions of cat in the catbot channel
+      if (receivedMessage.content.toLowerCase().includes("cat")) {
+        var cb_msg = catReply(receivedMessage.content)
+        receivedMessage.channel.send(cb_msg)
+      }
+    }
+
+    // catbot reacts to "cat" in messages outside of the catbot channel
+    if (receivedMessage.content.toLowerCase().includes("cat")) {
+      if (!(receivedMessage.channel.id == chan_catbot)) {
+        var randomEmoji = catReact()
+        console.log(randomEmoji)
+        receivedMessage.react(randomEmoji)
+
+        // occasionally meow
+        var randomReply = Math.random();
+        if (randomReply > .9) {
+          var cb_msg = catReply(receivedMessage.content)
+          receivedMessage.channel.send(cb_msg)
+        }
+      }
     }
 
     // Check if the bot's user was tagged in the message
