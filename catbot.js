@@ -1,6 +1,7 @@
 const Discord = require('discord.js')
 const client = new Discord.Client()
 
+const catbotUserID = "CatBot#8780"
 const chan_general = "421090801393598466"
 const chan_catbot = "551271365508857866"
 const chan_cleverbot = "548078165936046080"
@@ -285,6 +286,14 @@ client.on('message', (receivedMessage) => {
       for (var i = 0; i < catEmoji.length; i++) {
         receivedMessage.react(catEmoji[i])
       }
+    }
+
+    // Cat always replies to direct messages outside of catbot channel
+    // I wonder how long that's going to last...
+    if (receivedMessage.content.includes("551263363884122122")) {
+      console.log('@tagged')
+      var cb_msg = catReply()
+      receivedMessage.channel.send(cb_msg)
     }
 
     // occasionally meow
