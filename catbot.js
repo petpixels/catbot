@@ -80,10 +80,11 @@ function catPlay() {
   catPlaying[13] = "with its tail"
   catPlaying[14] = "with the dog"
   catPlaying[15] = "possum"
-  catPlaying[16] = "a cucumber"
+  catPlaying[16] = "with a cucumber"
   catPlaying[17] = "a crab"
   catPlaying[18] = "a fidget spinner"
   catPlaying[19] = "the accordion"
+  catPlaying[20] = "flute"
 
   var randomPlaying = Math.floor(Math.random() * catPlaying.length)
   var retString = catPlaying[randomPlaying]
@@ -106,9 +107,34 @@ function catReact(msg) {
     emoji.push(randomFishEmoji())
   }
 
-  if ((msg.includes("treat")) || (msg.includes("rat"))) {
+  if (msg.includes("treat")) {
     emoji.push(randomTreatEmoji())
   }
+
+  if (msg.includes("rat")) {
+    emoji.push("🐀")
+  }
+
+  if (msg.includes("mouse")) {
+    emoji.push("🐁")
+  }
+
+  if (msg.includes("rabbit")) {
+    emoji.push("🐰")
+  }
+
+  if (msg.includes("bun")) {
+    emoji.push("🐇")
+  }
+
+  if ((msg.includes("squirrel")) || (msg.includes("chipmunk"))) {
+    emoji.push("🐿")
+  }
+
+  if (msg.includes("pineapple")) {
+    emoji.push("🍍")
+  }
+
 
   console.log(emoji)
   return emoji
@@ -127,7 +153,7 @@ function catReply(msg) {
   catMeow[6] = "Meow"
   catMeow[7] = "Meow"
   catMeow[8] = "Meow"
-  catMeow[9] = "Meow"
+  catMeow[9] = "Meow?"
   catMeow[10] = "Purrrr"
   catMeow[11] = "Mew"
   catMeow[12] = "Mewtwo"
@@ -147,7 +173,7 @@ function catReply(msg) {
   catMeow[26] = "Meow"
   catMeow[27] = "Meow"
   catMeow[28] = "Meow"
-  catMeow[29] = "Meow"
+  catMeow[29] = "Meow?"
 
   var randomMeow = Math.floor(Math.random() * catMeow.length)
   var retString = catMeow[randomMeow]
@@ -201,6 +227,11 @@ client.on('messageDelete', (receivedMessage) => {
   console.log('deleted');
 })
 
+client.on('messageEdit', (receivedMessage) => {
+  var cb_msg = catReply(receivedMessage.content)
+  receivedMessage.channel.send(cb_msg)
+})
+
 client.on('message', (receivedMessage) => {
     // Prevent bot from responding to its own messages
     if (receivedMessage.author == client.user) {
@@ -244,7 +275,7 @@ client.on('message', (receivedMessage) => {
 
     // Cat Reaction outside of catbot channel
 
-    if (receivedMessage.channel.id != chan_catbot) {
+    // if (receivedMessage.channel.id != chan_catbot) {
       var catEmoji = catReact(receivedMessage.content)
       console.log(catEmoji)
       if (catEmoji) {
@@ -252,7 +283,7 @@ client.on('message', (receivedMessage) => {
           receivedMessage.react(catEmoji[i])
         }
       }
-    }
+    // }
 
     // Random global meow
     var randomGlobalReply = Math.random();
