@@ -149,6 +149,13 @@ function catReply(msg) {
     retString = "🍍"
   }
 
+  // randomly do nothing, .5% chance
+  var randomlyDoNothing = Math.random();
+  if (randomlyDoNothing > .95) {
+    console.log("Randomly did nothing... like a cat")
+    retString = ""
+  }
+
   console.log(retString)
   return retString
 }
