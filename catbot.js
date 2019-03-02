@@ -130,7 +130,7 @@ function catReply(msg) {
   catMeow[9] = "Meow"
   catMeow[10] = "Purrrrr"
   catMeow[11] = "Mew"
-  catMeow[12] = "Mao"
+  catMeow[12] = "Mewtwo"
   catMeow[13] = "Mrrrrow"
   catMeow[14] = "Maowow"
   catMeow[15] = "Mrrrrrreow"
@@ -184,8 +184,7 @@ client.on('ready', () => {
 })
 
 client.on('messageDelete', (receivedMessage) => {
-  var cb_msg = catReply(receivedMessage.content)
-  receivedMessage.channel.send(cb_msg)
+  receivedMessage.channel.send("Mao")
   console.log('deleted');
 })
 
