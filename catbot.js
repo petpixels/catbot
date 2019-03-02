@@ -4,7 +4,7 @@ const client = new Discord.Client()
 const chan_general = "421090801393598466"
 const chan_catbot = "551271365508857866"
 
-function randomEmoji() {
+function randomCatEmoji() {
 
   var catReaction = []
   catReaction[0] = "😺"
@@ -26,6 +26,40 @@ function randomEmoji() {
   var randomReaction = Math.floor(Math.random() * catReaction.length)
   console.log(randomReaction)
   return catReaction[randomReaction]
+}
+
+function randomFishEmoji() {
+
+  var fishReaction = []
+  fishReaction[0] = "🐟"
+  fishReaction[1] = "🐟"
+  fishReaction[2] = "🐟"
+  fishReaction[3] = "🐟"
+  fishReaction[4] = "🐟"
+  fishReaction[5] = "🐠"
+  fishReaction[6] = "🐡"
+  fishReaction[7] = "🎣"
+  fishReaction[8] = "🎣"
+  fishReaction[9] = "🎣"
+
+  var randomReaction = Math.floor(Math.random() * fishReaction.length)
+  console.log(randomReaction)
+  return fishReaction[randomReaction]
+
+}
+
+function randomTreatEmoji() {
+
+  var treatReaction = []
+  treatReaction[0] = "🐟"
+  treatReaction[1] = "🐟"
+  treatReaction[2] = "🐟"
+  treatReaction[3] = "🐟"
+
+  var randomReaction = Math.floor(Math.random() * treatReaction.length)
+  console.log(randomReaction)
+  return treatReaction[randomReaction]
+
 }
 
 function catPlay() {
@@ -52,7 +86,25 @@ function catPlay() {
 }
 
 function catReact(msg) {
-  return randomEmoji();
+  var emoji = []
+  msg = msg.toLowerCase()
+
+  console.log(msg)
+
+  if (msg.includes("cat")) {
+    emoji.push(randomCatEmoji())
+  }
+
+  if (msg.includes("fish")) {
+    emoji.push(randomFishEmoji())
+  }
+
+  if (msg.includes("treat")) {
+    // emoji.push(randomTreatEmoji())
+  }
+
+  console.log(emoji)
+  return emoji
 }
 
 function catReply(msg) {
@@ -128,14 +180,17 @@ client.on('message', (receivedMessage) => {
         var cb_msg = catReply(receivedMessage.content)
         receivedMessage.channel.send(cb_msg)
       }
+
+      if (receivedMessage.content.toLowerCase().includes("treat")) {
+        var cb_treat = randomTreatEmoji()
+        receivedMessage.channel.send(cb_treat)
+      }
     }
+
 
     // catbot reacts to "cat" in messages outside of the catbot channel
     if (receivedMessage.content.toLowerCase().includes("cat")) {
       if (!(receivedMessage.channel.id == chan_catbot)) {
-        var randomEmoji = catReact()
-        console.log(randomEmoji)
-        receivedMessage.react(randomEmoji)
 
         // occasionally meow
         var randomReply = Math.random();
@@ -143,6 +198,15 @@ client.on('message', (receivedMessage) => {
           var cb_msg = catReply(receivedMessage.content)
           receivedMessage.channel.send(cb_msg)
         }
+      }
+    }
+
+    // Cat Reaction
+    var catEmoji = catReact(receivedMessage.content)
+    console.log(catEmoji)
+    if (catEmoji) {
+      for (var i = 0; i < catEmoji.length; i++) {
+        receivedMessage.react(catEmoji[i])
       }
     }
 
