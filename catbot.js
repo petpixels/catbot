@@ -77,6 +77,13 @@ function catPlay() {
   catPlaying[10] = "chess"
   catPlaying[11] = "at the park"
   catPlaying[12] = "Live at the Apollo"
+  catPlaying[13] = "with its tail"
+  catPlaying[14] = "with the dog"
+  catPlaying[15] = "possum"
+  catPlaying[16] = "a cucumber"
+  catPlaying[17] = "a crab"
+  catPlaying[18] = "a fidget spinner"
+  catPlaying[19] = "the accordion"
 
   var randomPlaying = Math.floor(Math.random() * catPlaying.length)
   var retString = catPlaying[randomPlaying]
@@ -91,7 +98,7 @@ function catReact(msg) {
 
   console.log(msg)
 
-  if (msg.includes("cat")) {
+  if ((msg.includes("cat")) || (msg.includes("meow"))) {
     emoji.push(randomCatEmoji())
   }
 
@@ -99,7 +106,7 @@ function catReact(msg) {
     emoji.push(randomFishEmoji())
   }
 
-  if (msg.includes("treat")) {
+  if ((msg.includes("treat")) || (msg.includes("rat"))) {
     emoji.push(randomTreatEmoji())
   }
 
@@ -136,6 +143,10 @@ function catReply(msg) {
 
   if (input_msg == "purr") {
     retString = "Purr"
+  }
+
+  if (input_msg == "🍍") {
+    retString = "🍍"
   }
 
   console.log(retString)
@@ -183,6 +194,11 @@ client.on('message', (receivedMessage) => {
     if (receivedMessage.channel.id == chan_catbot) {
       // Catbot meows to all mentions of cat in the catbot channel
       if (receivedMessage.content.toLowerCase().includes("cat")) {
+        var cb_msg = catReply(receivedMessage.content)
+        receivedMessage.channel.send(cb_msg)
+      }
+
+      if (receivedMessage.content.toLowerCase().includes("meow")) {
         var cb_msg = catReply(receivedMessage.content)
         receivedMessage.channel.send(cb_msg)
       }
