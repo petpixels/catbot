@@ -112,7 +112,12 @@ function catPlay() {
 
 function catReact(msg) {
   var emoji = []
-  msg = msg.toLowerCase()
+
+  if (msg) {
+    msg = msg.toLowerCase()
+  } else { 
+    msg = ""
+  }
 
   if (msg.includes("kitt")) { emoji.push(randomCatEmoji()) }
   if (msg.includes("fish")) { emoji.push(randomFishEmoji()) }
@@ -203,7 +208,6 @@ client.on('ready', () => {
     catPlay();
 
     // List servers the bot is connected to
-    /*
     console.log("Servers:")
     client.guilds.forEach((guild) => {
         console.log(" - " + guild.name)
@@ -213,7 +217,6 @@ client.on('ready', () => {
             console.log(` -- ${channel.name} (${channel.type}) - ${channel.id}`)
         })
     })
-    */
 
     var generalChannel = client.channels.get(chan_general)
     var catbotChannel = client.channels.get(chan_catbot)
@@ -228,6 +231,11 @@ client.on('messageDelete', (receivedMessage) => {
 client.on('messageEdit', (receivedMessage) => {
   var cb_msg = catReply(receivedMessage.content)
   receivedMessage.channel.send(cb_msg)
+})
+
+client.on('guildMemberAdd', msg => {
+  var cb_msg = catReply() // just random
+  msg.guild.channels.get(chan_general).send(cb_msg)
 })
 
 client.on('message', (receivedMessage) => {
