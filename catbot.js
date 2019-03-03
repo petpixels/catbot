@@ -1,6 +1,8 @@
 // When it says secret, it really kind of means secret...
 // so let's put it right at the top of this file here
-bot_secret_token = "NTUxMjYzMzYzODg0MTIyMTIy.D1vn8Q.GPZqVzIqseOyhWqiM72vZ22qejs"
+const catbot_secret = require("./catbot-secret")
+const bot_secret_token = catbot_secret.bot_secret_token
+
 const uuid = require('uuid')
 const id = uuid.v1()
 
