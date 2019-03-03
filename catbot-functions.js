@@ -1,4 +1,138 @@
 module.exports = {
+
+  reply: function(msg) {
+    var cb_input
+    if (msg) { cb_input = msg.toLowerCase() }
+
+    console.log(msg)
+
+    // return a random string sometimes, but mostly meow
+    var weightedOdds = Math.random()
+    var retString = "Meow"
+    if (weightedOdds < .25) {
+      retString = this.randomMeow()
+    }
+
+    // randomly do nothing, .5% chance
+    var randomlyDoNothing = Math.random();
+    if (randomlyDoNothing < .05) {
+      console.log("Randomly did nothing... like a cat")
+      retString = ""
+    }
+
+    // !commands
+    if (cb_input) {
+      // Treat
+      if (cb_input.includes("!treat")) {
+        retString = this.randomTreatEmoji()
+      }
+
+      // Pineapple
+      if ((cb_input.includes("!pineapple")) || (cb_input == "🍍")) {
+        retString = "🍍"
+      }
+
+      // Fish
+      if (cb_input.includes("!fish")) {
+        retString = this.randomFishEmoji()
+      }
+
+      // Purr
+      if (cb_input.includes("!purr")) {
+        retString = "Purrr"
+      }
+
+      // Play (anything)
+      if (cb_input.includes("!play")) {
+        outputFlag = false
+
+        var aPlay = msg.split(" ") // because it's not lowercase
+        var tmpPlay = ""
+        var playLoc = 0
+
+        // double iteration has got to be a bad idea
+        // but if it's stupid and it works it's not stupid
+        for (var i = 0; i < aPlay.length; i++) {
+          if (aPlay[i] == "!play") {
+            playLoc = i+1
+          }
+        }
+
+        for (var i = playLoc; i < aPlay.length; i++) {
+          tmpPlay = tmpPlay + " " + aPlay[i]
+        }
+
+        console.log("play: " + tmpPlay)
+
+        // set discord client "now playing"
+        client.user.setActivity(this.play(tmpPlay))
+      }
+    }
+
+    return retString
+  },
+
+  play: function(msg) {
+    var nowPlaying
+
+    if (msg) {
+      nowPlaying = msg
+    } else {
+      var nowPlaying = this.randomPlaying()
+    }
+
+    console.log(nowPlaying)
+    return nowPlaying
+  },
+
+  react: function(msg) {
+    var emoji = []
+
+    if (msg) {
+      msg = msg.toLowerCase()
+    } else {
+      msg = ""
+    }
+
+    if (msg.includes("kitt")) { emoji.push(this.randomCatEmoji()) }
+    if (msg.includes("fish")) { emoji.push(this.randomFishEmoji()) }
+    if (msg.includes("treat")) { emoji.push(this.randomTreatEmoji()) }
+    if (msg.includes("bat")) { emoji.push("🦇") }
+    if (msg.includes("rat")) { emoji.push("🐀") }
+    if (msg.includes("mouse")) { emoji.push("🐁") }
+    if (msg.includes("rabbit")) { emoji.push("🐰") }
+    if (msg.includes("bun")) { emoji.push("🐇") }
+    if (msg.includes("salad")) { emoji.push("🥗") }
+    if (msg.includes("horse")) { emoji.push("🐴") }
+    if (msg.includes("cow")) { emoji.push("🐄") }
+    if (msg.includes("bot")) { emoji.push("🤖") }
+    if (msg.includes("bull")) { emoji.push("🐃") }
+    if (msg.includes("pineapple")) { emoji.push("🍍") }
+    if (msg.includes("squirrel")) { emoji.push("🐿") }
+    if (msg.includes("girl")) { emoji.push("🐿") }
+    if (msg.includes("chipmunk")) { emoji.push("🐿") }
+    if (msg.includes("poo")) { emoji.push("💩") }
+    if (msg.includes("shit")) { emoji.push("💩") }
+    if (msg.includes("crap")) { emoji.push("💩") }
+    if (msg.includes("turd")) { emoji.push("💩") }
+    if (msg.includes("turtle")) { emoji.push("🐢") }
+    if (msg.includes("tortoise")) { emoji.push("🐢") }
+    if (msg.includes("moses")) { emoji.push("🐢") }
+    if ((msg.includes("mail")) || (msg.includes("male"))) { emoji.push("📮") }
+    if (msg.includes("post")) { emoji.push("📮") }
+    if (msg.includes("duck")) { emoji.push("🦆") }
+    if (msg.includes("fuck")) { emoji.push("🦆") }
+
+    if ((msg.includes("cat")) && (!(msg.includes("catbot")))) { emoji.push(this.randomCatEmoji()) }
+    if ((msg.includes("meow")) || (msg.includes("kitt"))) { emoji.push(this.randomCatEmoji()) }
+    console.log(emoji)
+    return emoji
+  },
+
+  // *********************
+  // * Support functions
+  // *********************
+  
   randomFishEmoji: function() {
 
     var fishReaction = []
@@ -13,7 +147,7 @@ module.exports = {
     fishReaction[8] = "🎣"
     fishReaction[9] = "🎣"
 
-    var randomReaction = Math.floor(Math.random() * fishReaction.length)  
+    var randomReaction = Math.floor(Math.random() * fishReaction.length)
     return fishReaction[randomReaction]
   },
 
@@ -83,6 +217,7 @@ module.exports = {
     var ret = Math.floor(Math.random() * catMeow.length)
     return catMeow[ret]
   },
+
   randomPlaying: function() {
     var catPlaying = []
     catPlaying[0]  = "with string"
@@ -128,5 +263,3 @@ module.exports = {
     return retString
   }
 }
-
-// private functions below this
