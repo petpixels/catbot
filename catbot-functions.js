@@ -219,6 +219,7 @@ module.exports = {
     if (msg.includes("coconut")) { emoji.push("🥥") }
     if (msg.includes("avocad")) { emoji.push("🥑") }
     if (msg.includes("avacad")) { emoji.push("🥑") }
+    if (msg.includes("avocat")) { emoji.push("🥑") }
     if (msg.includes("eggplant")) { emoji.push("🍆") }
     if (msg.includes("potato")) { emoji.push("🥔") }
     if (msg.includes("carrot")) { emoji.push("🥕") }
@@ -346,11 +347,12 @@ module.exports = {
     // if (msg.includes("honey")) { emoji.push("🍯") }
     if (msg.includes("birthday")) { emoji.push("🎂") }
     if (msg.includes("anniversary")) { emoji.push("🎂") }
+    if (msg.includes("code")) { emoji.push("🥑") }
 
 
     // Transportation
     if (msg.includes("boat")) { emoji.push("🚣") }
-    if (msg.includes("ship")) { emoji.push("🚣") }
+    if (msg.includes("ship")) { emoji.push("🚢") }
     if (msg.includes("row")) { emoji.push("🛶") }
     if (msg.includes("paddle")) { emoji.push("🛶") }
     if (msg.includes("oar")) { emoji.push("🛶") }
@@ -410,11 +412,69 @@ module.exports = {
     if (msg.includes("cruise")) { emoji.push("🛳") }
     if (msg.includes("earth")) { emoji.push("🌎") }
     if (msg.includes("map")) { emoji.push("🗾") }
+    if (msg.includes("pyongyang")) { emoji.push("🏓") }
+    if (msg.includes("paris")) { emoji.push("🇫🇷") }
+    if (msg.includes("france")) { emoji.push("🇫🇷") }
+    if (msg.includes("french")) { emoji.push("🇫🇷") }
+    if (msg.includes("uk")) { emoji.push("🇬🇧") }
+    if (msg.includes("england")) { emoji.push("🇬🇧") }
+    if (msg.includes("german")) { emoji.push("🇩🇪") }
+    if (msg.includes("deutsch")) { emoji.push("🇩🇪") }
+    if (msg.includes("denmark")) { emoji.push("🇩🇰") }
+    if (msg.includes("dane")) { emoji.push("🇩🇰") }
+    if (msg.includes("aruba")) { emoji.push("🇦🇼") }
+    if (msg.includes("antarctic")) { emoji.push("🇦🇶") }
+    if (msg.includes("anarctic")) { emoji.push("🇦🇶") }
+    if (msg.includes("antartica")) { emoji.push("🇦🇶") }
+    if (msg.includes("belgium")) { emoji.push("🇧🇪") }
+    if (msg.includes("belguim")) { emoji.push("🇧🇪") }
+    if (msg.includes("chile")) { emoji.push("🇨🇱") }
+    if (msg.includes("china")) { emoji.push("🇨🇳") }
+    if (msg.includes("chines")) { emoji.push("🇨🇳") }
+    if (msg.includes("spain")) { emoji.push("🇪🇸") }
+    if (msg.includes("finland")) { emoji.push("🇫🇮") }
+    if (msg.includes("georgia")) { emoji.push("🇬🇪") }
+    if (msg.includes("greece")) { emoji.push("🇬🇷") }
+    if (msg.includes("grease")) { emoji.push("🇬🇷") }
+    if (msg.includes("ireland")) { emoji.push("🇮🇪") }
+    if (msg.includes("israel")) { emoji.push("🇮🇱") }
+    if (msg.includes("iran")) { emoji.push("🇮🇷") }
+    if (msg.includes("italy")) { emoji.push("🇮🇹") }
+    if (msg.includes("jamaica")) { emoji.push("🇯🇲") }
+    if (msg.includes("japan")) { emoji.push("🇯🇵") }
+    if (msg.includes("kenya")) { emoji.push("🇰🇪") }
+    if (msg.includes("cambodia")) { emoji.push("🇰🇭") }
+    if (msg.includes("korea")) { emoji.push("🇰🇷") }
+    if (msg.includes("mongolia")) { emoji.push("🇲🇳") }
+    if (msg.includes("malta")) { emoji.push("🇲🇹") }
+    if (msg.includes("mexic")) { emoji.push("🇲🇽") }
+    if (msg.includes("axtec")) { emoji.push("🇲🇽") }
+    if (msg.includes("holland")) { emoji.push("🇳🇱") }
+    if (msg.includes("netherlands")) { emoji.push("🇳🇱") }
+    if (msg.includes("dutch")) { emoji.push("🇳🇱") }
+    if (msg.includes("norway")) { emoji.push("🇳🇴") }
+    if (msg.includes("norweg")) { emoji.push("🇳🇴") }
+    if (msg.includes("nepal")) { emoji.push("🇳🇵") }
+    if (msg.includes("zealand")) { emoji.push("🇳🇿") }
+    if (msg.includes("peru")) { emoji.push("🇵🇪") }
+    if (msg.includes("philippin")) { emoji.push("🇵🇭") }
+    if (msg.includes("phillipines")) { emoji.push("🇵🇭") }
+    if (msg.includes("philipines")) { emoji.push("🇵🇭") }
+    if (msg.includes("filipin")) { emoji.push("🇵🇭") }
+    if (msg.includes("fillipin")) { emoji.push("🇵🇭") }
+    if (msg.includes("tagalog")) { emoji.push("🇵🇭") }
+    if (msg.includes("pakistan")) { emoji.push("🇵🇰") }
+    if (msg.includes("poland")) { emoji.push("🇵🇱") }
+    if (msg.includes("polish")) { emoji.push("🇵🇱") }
+    if (msg.includes("vietnam")) { emoji.push("🇻🇳") }
+
 
     // Time
     if (msg.includes("bell")) { emoji.push("🛎") }
     if (msg.includes("watch")) { emoji.push("⌚") }
     if (msg.includes("alarm")) { emoji.push("⏰") }
+    if (msg.includes("time")) { emoji.push("🕰") }
+    if (msg.includes("clock")) { emoji.push("🕰") }
     if (msg.includes("timer")) { emoji.push("⏲") }
     if (msg.includes("sand")) { emoji.push("⏳") }
     if (msg.includes("hourglass")) { emoji.push("⏳") }
@@ -463,6 +523,7 @@ module.exports = {
     if (msg.includes("flam")) { emoji.push("🔥") }
     if (msg.includes("wave")) { emoji.push("🌊") }
     if (msg.includes("droplet")) { emoji.push("💧") }
+    if (msg.includes("water")) { emoji.push("💧") }
 
     // Holidays & Celebration
     if (msg.includes("pumpkin")) { emoji.push("🎃") }
@@ -472,9 +533,11 @@ module.exports = {
     if (msg.includes("balloon")) { emoji.push("🎈") }
     if (msg.includes("sparkle")) { emoji.push("✨") }
     if (msg.includes("shiny")) { emoji.push("✨") }
+    if (msg.includes("yay")) { emoji.push("🎉") }
     if (msg.includes("party")) { emoji.push("🎉") }
     if (msg.includes("party")) { emoji.push("🎊") }
     if (msg.includes("party")) { emoji.push("🎈") }
+    if (msg.includes("fun")) { emoji.push("🎉") }
     if (msg.includes("bamboo")) { emoji.push("🎋") } // why unicode?
     if (msg.includes("carp")) { emoji.push("🎏") }
     if (msg.includes("ribbon")) { emoji.push("🎀") }
@@ -519,6 +582,7 @@ module.exports = {
     if (msg.includes("curl")) { emoji.push("🥌") }
 
     // Misc
+    if (msg.includes("case")) { emoji.push("💼") }
     if (msg.includes("target")) { emoji.push("🎯") }
     if (msg.includes("bullseye")) { emoji.push("🎯") }
     if (msg.includes("game")) { emoji.push("🎮") }
@@ -579,7 +643,7 @@ module.exports = {
     if (msg.includes("sciss")) { emoji.push("✂") }
     if (msg.includes("clip")) { emoji.push("📎") }
     if (msg.includes("tack")) { emoji.push("📌") }
-    if (msg.includes("pin")) { emoji.push("📌") }
+    if (msg.includes(" pin")) { emoji.push("📌") }
     if (msg.includes("folder")) { emoji.push("📂") }
     if (msg.includes("pen")) { emoji.push("🖋") }
     if (msg.includes("box")) { emoji.push("📦") }
@@ -599,7 +663,99 @@ module.exports = {
     if (msg.includes("drama")) { emoji.push("🎭") }
     if (msg.includes("paint")) { emoji.push("🎨") }
     if (msg.includes("painting")) { emoji.push("🖼") }
+    if (msg.includes("cowboy")) { emoji.push("🤠") }
+    if (msg.includes("devil")) { emoji.push("😈") }
+    if (msg.includes("satan")) { emoji.push("😈") }
+    if (msg.includes("skull")) { emoji.push("💀") }
+    if (msg.includes("dead")) { emoji.push("☠") }
+    if (msg.includes("jolly")) { emoji.push("☠") }
+    if (msg.includes("rodger")) { emoji.push("☠") }
+    if (msg.includes("ghost")) { emoji.push("👻") }
+    if (msg.includes("invade")) { emoji.push("👾") }
+    if (msg.includes("kiss")) { emoji.push("💋") }
+    if (msg.includes("broken")) { emoji.push("💔") }
+    if (msg.includes("hundred")) { emoji.push("💯") }
+    if (msg.includes("100")) { emoji.push("💯") }
+    if (msg.includes("bomb")) { emoji.push("💣") }
+    if (msg.includes("sleep")) { emoji.push("💤") }
+    if (msg.includes("zzz")) { emoji.push("💤") }
+    if (msg.includes("thought")) { emoji.push("💭") }
+    if (msg.includes("think")) { emoji.push("💭") }
+    if (msg.includes("writ")) { emoji.push("✍") }
+    if (msg.includes("brain")) { emoji.push("🧠") }
+    if (msg.includes("knows")) { emoji.push("👃") }
+    if (msg.includes("nose")) { emoji.push("👃") }
+    if (msg.includes("taste")) { emoji.push("👅") }
+    if (msg.includes("tongue")) { emoji.push("👅") }
+    if (msg.includes("mouth")) { emoji.push("👄") }
+    if (msg.includes("lips")) { emoji.push("👄") }
+    if (msg.includes("hat")) { emoji.push("🎩") } //that
+    if (msg.includes("crown")) { emoji.push("👑") }
+    if (msg.includes("top")) { emoji.push("🎩") }
+    if (msg.includes("chapeau")) { emoji.push("👒") }
+    if (msg.includes("graduat")) { emoji.push("🎓") }
+    if (msg.includes("universit")) { emoji.push("🎓") }
+    if (msg.includes("colleg")) { emoji.push("🎓") }
+    if (msg.includes("school")) { emoji.push("🎓") }
+    if (msg.includes("gem")) { emoji.push("💎") }
+    if (msg.includes("ruby")) { emoji.push("💎") }
+    if (msg.includes("boot")) { emoji.push("👢") }
+    if (msg.includes("boot")) { emoji.push("👢") }
+    if (msg.includes("backpack")) { emoji.push("🎒") }
+    if (msg.includes("purse")) { emoji.push("👜") }
+    if (msg.includes("pocketbook")) { emoji.push("👜") }
+    if (msg.includes("shop")) { emoji.push("🛍") }
+    if (msg.includes("shoe")) { emoji.push("👟") }
+    if (msg.includes("heel")) { emoji.push("👠") }
+    if (msg.includes("heal")) { emoji.push("👠") }
+    if (msg.includes("iphone")) { emoji.push("📱") }
+    if (msg.includes("droid")) { emoji.push("📟") }
+    if (msg.includes("teleph")) { emoji.push("☎") }
+    if (msg.includes("call ")) { emoji.push("📞") }
+    if (msg.includes("power")) { emoji.push("🔌") }
+    if (msg.includes("telev")) { emoji.push("📺") }
+    if (msg.includes("tv")) { emoji.push("📺") }
+    if (msg.includes("movie")) { emoji.push("🎥") }
+    if (msg.includes("film")) { emoji.push("🎞") }
+    if (msg.includes("video")) { emoji.push("🎬") }
+    if (msg.includes("camera")) { emoji.push("📷") }
+    if (msg.includes("project")) { emoji.push("📽") }
+    if (msg.includes("pic")) { emoji.push("📸") }
+    if (msg.includes("tape")) { emoji.push("📼") }
+    if (msg.includes("vhs")) { emoji.push("📼") }
+    if (msg.includes("beta")) { emoji.push("📼") }
+    if (msg.includes("search")) { emoji.push("🔍") }
+    if (msg.includes("find")) { emoji.push("🔎") }
+    if (msg.includes("found")) { emoji.push("🔎") }
+    if (msg.includes("idea")) { emoji.push("💡") }
+    if (msg.includes("bulb")) { emoji.push("💡") }
+    if (msg.includes("flash")) { emoji.push("🔦") }
+    if (msg.includes("candle")) { emoji.push("🕯") }
+    if (msg.includes("lantern")) { emoji.push("🏮") }
+    if (msg.includes("note")) { emoji.push("📓") }
+    if (msg.includes("book")) { emoji.push("📖") }
+    if (msg.includes("scroll")) { emoji.push("📜") }
+    if (msg.includes("paper")) { emoji.push("📰") }
+    if (msg.includes("tag")) { emoji.push("🏷") }
 
+    // Music
+    if (msg.includes("mic")) { emoji.push("🎤") }
+    if (msg.includes("phones")) { emoji.push("🎧") }
+    if (msg.includes("radio")) { emoji.push("📻") }
+    if (msg.includes("sax")) { emoji.push("🎷") }
+    if (msg.includes("guitar")) { emoji.push("🎸") }
+    if (msg.includes("keyb")) { emoji.push("🎹") }
+    if (msg.includes("trump")) { emoji.push("🎺") }
+    if (msg.includes("violin")) { emoji.push("🎻") }
+    if (msg.includes("viola")) { emoji.push("🎻") }
+    if (msg.includes("cello")) { emoji.push("🎻") }
+    if (msg.includes("fiddl")) { emoji.push("🎻") }
+    if (msg.includes("drum")) { emoji.push("🥁") }
+    if (msg.includes("drum")) { emoji.push("🥁") }
+
+    if (msg.includes("meow")) { emoji.push(this.randomCatEmoji()) }
+    if (msg.includes("chat")) { emoji.push(this.randomCatEmoji()) }
+    if (msg.includes("mew")) { emoji.push(this.randomCatEmoji()) }
     if ((msg.includes("cat")) && (!(msg.includes("catbot")))) { emoji.push(this.randomCatEmoji()) }
     if ((msg.includes("meow")) || (msg.includes("kitt"))) { emoji.push(this.randomCatEmoji()) }
     console.log(emoji)
@@ -731,7 +887,7 @@ module.exports = {
     catPlaying[21] = "Cat Simulator 2000"
     catPlaying[22] = "Strikeforce: Kitty"
     catPlaying[23] = "Skyrim"
-    catPlaying[24] = "Lasercat"
+    catPlaying[24] = "Lasertag"
     catPlaying[25] = "Pinochle"
     catPlaying[26] = "Bridge"
     catPlaying[27] = "Monopoly"
