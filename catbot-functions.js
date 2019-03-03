@@ -52,6 +52,37 @@ module.exports = {
     return treatReaction[randomReaction]
   },
 
+  randomMeow: function() {
+    var catMeow = []
+    catMeow[0]  = "Meow?"
+    catMeow[1]  = "Purrrr"
+    catMeow[2]  = "Mew"
+    catMeow[3]  = "Mewtwo"
+    catMeow[4]  = "Mrrrrow"
+    catMeow[5]  = "Maowow"
+    catMeow[6]  = "Mrrrrrreow"
+    catMeow[7]  = "Ring-ding-ding-ding-dingeringeding! Wa-pa-pa-pa-pa-pa-pow!"
+    catMeow[8]  = "You have cat to be kitten me"
+    catMeow[9]  = "Prrrrrrrrr"
+    catMeow[10] = "Moo"
+    catMeow[11] = "I hate Mondays"
+    catMeow[12] = "Feed me"
+    catMeow[13] = "I love lasagna"
+    catMeow[14] = "I'll see you in another life, when we are both cats"
+    catMeow[15] = "Miau"
+    catMeow[16] = "Nyan"
+    catMeow[17] = "Meo"
+    catMeow[18] = "Miaou"
+    catMeow[19] = "Miao"
+    catMeow[20] = "мяу-мяу"
+    catMeow[21] = "мур-мур"
+    catMeow[22] = "Woof!"
+    catMeow[23] = "ニャー"
+    catMeow[24] = this.randomCatEmoji()
+
+    var ret = Math.floor(Math.random() * catMeow.length)
+    return catMeow[ret]
+  },
   randomPlaying: function() {
     var catPlaying = []
     catPlaying[0]  = "with string"

@@ -1,3 +1,7 @@
+// When it says secret, it really kind of means secret...
+// so let's put it right at the top of this file here
+bot_secret_token = "NTUxMjYzMzYzODg0MTIyMTIy.D1vn8Q.GPZqVzIqseOyhWqiM72vZ22qejs"
+
 const catbot = require("./catbot-functions")
 
 const Discord = require('discord.js')
@@ -11,6 +15,7 @@ const chan_catbot = "551271365508857866"
 const chan_cleverbot = "548078165936046080"
 
 process.on('uncaughtException', function(err) {
+  console.log(err)
   catPlay("dead")
 });
 
@@ -33,7 +38,7 @@ function catReact(msg) {
 
   if (msg) {
     msg = msg.toLowerCase()
-  } else { 
+  } else {
     msg = ""
   }
 
@@ -74,40 +79,11 @@ function catReact(msg) {
 
 function catReply(msg) {
 
-  var catMeow = []
-  catMeow[0]  = "Meow?"
-  catMeow[1]  = "Purrrr"
-  catMeow[2]  = "Mew"
-  catMeow[3]  = "Mewtwo"
-  catMeow[4]  = "Mrrrrow"
-  catMeow[5]  = "Maowow"
-  catMeow[6]  = "Mrrrrrreow"
-  catMeow[7]  = "Ring-ding-ding-ding-dingeringeding! Wa-pa-pa-pa-pa-pa-pow!"
-  catMeow[8]  = "You have cat to be kitten me"
-  catMeow[9]  = "Prrrrrrrrr"
-  catMeow[10] = "Moo"
-  catMeow[11] = "I hate Mondays"
-  catMeow[12] = "Feed me"
-  catMeow[13] = "I love lasagna"
-  catMeow[14] = "I'll see you in another life, when we are both cats"
-  catMeow[15] = "Miau"
-  catMeow[16] = "Nyan"
-  catMeow[17] = "Meo"
-  catMeow[18] = "Miaou"
-  catMeow[19] = "Miao"
-  catMeow[20] = "мяу-мяу"
-  catMeow[21] = "мур-мур"
-  catMeow[22] = "Woof!"
-  catMeow[23] = "ニャー"
-  catMeow[24] = catReact(msg)
-
   // return a random string sometimes, but mostly meow
   var weightedOdds = Math.random()
-  var randomMeow = Math.floor(Math.random() * catMeow.length)
+  var retString = "Meow"
   if (weightedOdds < .25) {
-    var retString = catMeow[randomMeow]
-  } else {
-    retString = "Meow"
+    retString = catbot.randomMeow()
   }
 
   // randomly do nothing, .5% chance
@@ -138,66 +114,116 @@ client.on('ready', () => {
 
     var generalChannel = client.channels.get(chan_general)
     var catbotChannel = client.channels.get(chan_catbot)
-    //catbotChannel.send("Meow")
+
+    // say hello
+    // catbotChannel.send(catbot.randomMeow())
 })
 
 client.on('messageDelete', (receivedMessage) => {
   receivedMessage.channel.send("Mao")
-  console.log('deleted');
-})
 
-client.on('messageEdit', (receivedMessage) => {
-  var cb_msg = catReply(receivedMessage.content)
-  receivedMessage.channel.send(cb_msg)
+  console.log('Mao');
 })
 
 client.on('guildMemberAdd', msg => {
-  var cb_msg = catReply() // just random
-  msg.guild.channels.get(chan_general).send(cb_msg)
+  var newUserGreeting = catbot.randomMeow()
+  msg.guild.channels.get(chan_general).send(newUserGreeting)
+
+  console.log(newUserGreeting)
 })
 
 client.on('message', (receivedMessage) => {
-  // Prevent bot from responding to its own messages
-  if (receivedMessage.author == client.user) { return } // catch and release 
+  var replyRequired = false
 
-  // console.log(receivedMessage.channel.id)
+  // Prevent bot from responding to its own messages
+  if (receivedMessage.author == client.user) { return } // catch and release
 
   // In the catbot channel
   if ((receivedMessage.channel.id == chan_catbot) || (receivedMessage.channel.id == chan_cleverbot)) {
+    replyRequired = true
 
     // get a message from cb
     var cb_input = receivedMessage.content.toLowerCase()
-    var cb_msg = catReply(receivedMessage.content)
+    var cb_msg = catReply(cb_input)
+    var cb_output = []
 
-    // message cannot be blank
-    if (cb_msg && (cb_msg != "do nothing")) {
+    // incoming message cannot be blank
+    if (cb_msg) {
+      var outputFlag = false
 
+      // log input message
       console.log(cb_msg)
-      var catOutput = "";
 
       // Catbot meows to all mentions of cat in the catbot channel
-      if ((cb_input.includes("cat")) || (cb_input.includes("kitt"))) { receivedMessage.channel.send(cb_msg) }
+      if ((cb_input.includes("cat")) || (cb_input.includes("kitt"))) {
+        cb_output.push(cb_msg)
+        outputFlag = true
+        // receivedMessage.channel.send(cb_msg)
+       }
 
       // It's polite to respond to meow
-      if ((cb_input.includes("meow")) || (cb_input.includes("nyan")))  { receivedMessage.channel.send(cb_msg) }
+      if ((cb_input.includes("meow")) || (cb_input.includes("nyan"))) {
+        cb_output.push(cb_msg)
+        outputFlag = true
+        // receivedMessage.channel.send(cb_msg)
+      }
 
       // Manual overrides (catbot commands):
-      if (cb_input == "purr") { receivedMessage.channel.send("Purrr") }
-      if (cb_input == "moo") { receivedMessage.channel.send("Moooo") }
+      if (cb_input.includes("purr")) {
+        outputFlag = true
+        cb_output.push("Purrr")
+        // receivedMessage.channel.send("Purrr")
+      }
 
-      if (cb_input.includes("treat")) { receivedMessage.channel.send(catbot.randomTreatEmoji()) }
-      if (cb_input.includes("fish")) { receivedMessage.channel.send(catbot.randomFishEmoji()) }
-      if ((cb_input.includes("pineapple")) || (cb_input == "🍍")) { receivedMessage.channel.send("🍍") }
-      if ((cb_input.includes("mail")) || (cb_input.includes("post"))) { receivedMessage.channel.send("📮") }
-
+      if (cb_input.includes("moo")) {
+        outputFlag = true
+        cb_output.push("Moooo")
+        // receivedMessage.channel.send("Moooo")
+      }
 
       // !commands
 
+      // Treat
+      if (cb_input.includes("!treat")) {
+        outputFlag = false
+        receivedMessage.channel.send(catbot.randomTreatEmoji())
+      }
+
+      // Pineapple
+      if ((cb_input.includes("!pineapple")) || (cb_input == "🍍")) {
+        outputFlag = false
+        receivedMessage.channel.send("🍍")
+      }
+
+      // Fish
+      if (cb_input.includes("!fish")) {
+        outputFlag = false
+        receivedMessage.channel.send(catbot.randomFishEmoji())
+      }
+
+      // Pineapple
+      if (cb_input.includes("!purr")) {
+        outputFlag = false
+        receivedMessage.channel.send("Purrr")
+      }
+
       // Play (anything)
       if (cb_input.includes("!play")) {
+        outputFlag = false
+
         var aPlay = receivedMessage.content.split(" ")
         var tmpPlay = ""
-        for (var i = 1; i < aPlay.length; i++) {
+        var playLoc = 0
+
+        // double iteration has got to be a bad idea
+        // but if it's stupid and it works it's not stupid
+        for (var i = 0; i < aPlay.length; i++) {
+          if (aPlay[i] == "!play") {
+            playLoc = i+1
+          }
+        }
+
+        for (var i = playLoc; i < aPlay.length; i++) {
           tmpPlay = tmpPlay + " " + aPlay[i]
         }
 
@@ -205,8 +231,68 @@ client.on('message', (receivedMessage) => {
         catPlay(tmpPlay)
       }
 
-    }
+      // Output Message (if any)
 
+console.log(cb_output)
+
+      // if ouput flag is set, check for output
+      if (outputFlag) {
+        var retString = ""
+        var meowCount = 0
+        var notMeow = []
+
+        if (cb_output) { // output array must exist
+          for (var i = 0; i < cb_output.length; i++) {
+            if (cb_output[i].toLowerCase().includes("meow")) {
+              // count meows for weighted average
+              meowCount++
+            } else {
+              // save "not meows" for later
+              if (cb_output[i]) {
+                notMeow.push(cb_output[i])
+              }
+            }
+          }
+
+          console.log("Meow count: " + meowCount)
+          console.log("Not Meow: " + notMeow)
+
+          if (meowCount > 0) {
+            console.log("Positive Meow Count")
+            // There are meows
+            var outputRandom = Math.random()
+            // weighted probability of # of meows vs other responses
+            if (notMeow.length > 0) {
+              console.log("Not meow: " + retString)
+
+              if (outputRandom < (meowCount/10)) {
+                // get random other reply
+                var ret = Math.floor(Math.random() * notMeow.length)
+                retString = notMeow[ret]
+              } else {
+                retString = "Meow"
+              }
+            } else {
+              //output is meow
+              retString = "Meow"
+            }
+
+          } else {
+            // no meows to balance it out, just pick a reply at random
+            console.log("Not Meow")
+            if (notMeow.length > 0) {
+              var ret = Math.floor(Math.random() * notMeow.length)
+              retString = notMeow[ret]
+            }
+          }
+
+          console.log("Return String: " + retString)
+          if (retString) {
+            receivedMessage.channel.send(retString)
+          }
+        }
+      }
+    }
   } else {
 
     // React to "cat" in messages outside of the catbot channel
@@ -248,10 +334,8 @@ client.on('message', (receivedMessage) => {
     var cb_msg = catReply(receivedMessage.content.toLowerCase())
     receivedMessage.channel.send(cb_msg)
   }
+
+  console.log(receivedMessage.channel.id)
 })
 
-// Get your bot's secret token from:
-// https://discordapp.com/developers/applications/
-// Click on your application -> Bot -> Token -> "Click to Reveal Token"
-bot_secret_token = "NTUxMjYzMzYzODg0MTIyMTIy.D1vn8Q.GPZqVzIqseOyhWqiM72vZ22qejs"
 client.login(bot_secret_token)
