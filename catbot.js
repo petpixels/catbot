@@ -5,7 +5,6 @@ const uuid = require('uuid')
 const id = uuid.v1()
 
 const catbot = require("./catbot-functions")
-const winston = require('winston')
 
 const Discord = require('discord.js')
 const client = new Discord.Client()
@@ -18,17 +17,24 @@ const chan_catbot = "551271365508857866"
 const chan_cleverbot = "548078165936046080"
 
 const { createLogger, format, transports } = require('winston');
+require('winston-daily-rotate-file');
+
 const fs = require('fs');
 const path = require('path');
 
 const env = process.env.NODE_ENV || 'development';
-const logDir = 'log';
+const logDir = 'logs';
+
 // Create the log directory if it does not exist
 if (!fs.existsSync(logDir)) {
   fs.mkdirSync(logDir);
 }
 
-const filename = path.join(logDir, 'catbot.log');
+// const filename = path.join(logDir, 'catbot.log');
+const dailyRotateFileTransport = new transports.DailyRotateFile({
+  filename: `${logDir}/catbot-%DATE%.log`,
+  datePattern: 'YYYY-MM-DD'
+});
 
 const logger = createLogger({
   // change level if in dev environment versus production
@@ -49,7 +55,8 @@ const logger = createLogger({
         )
       )
     }),
-    new transports.File({ filename })
+    dailyRotateFileTransport
+    //new transports.File({ filename })
   ]
 });
 

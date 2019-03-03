@@ -4,7 +4,7 @@ module.exports = {
     var cb_input
     if (msg) { cb_input = msg.toString().toLowerCase() }
 
-    console.log("Reply message: " + msg)
+    // console.log("Reply message: " + msg)
 
     // return a random string sometimes, but mostly meow
     var weightedOdds = Math.random()
