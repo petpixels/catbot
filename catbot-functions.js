@@ -2,9 +2,9 @@ module.exports = {
 
   reply: function(msg) {
     var cb_input
-    if (msg) { cb_input = msg.toLowerCase() }
+    if (msg) { cb_input = msg.toString().toLowerCase() }
 
-    console.log(msg)
+    console.log("Reply message: " + msg)
 
     // return a random string sometimes, but mostly meow
     var weightedOdds = Math.random()
@@ -22,25 +22,11 @@ module.exports = {
 
     // !commands
     if (cb_input) {
-      // Treat
-      if (cb_input.includes("!treat")) {
-        retString = this.randomTreatEmoji()
-      }
 
-      // Pineapple
-      if ((cb_input.includes("!pineapple")) || (cb_input == "🍍")) {
-        retString = "🍍"
-      }
-
-      // Fish
-      if (cb_input.includes("!fish")) {
-        retString = this.randomFishEmoji()
-      }
-
-      // Purr
-      if (cb_input.includes("!purr")) {
-        retString = "Purrr"
-      }
+      if (cb_input.includes("!fish")) { retString = this.randomFishEmoji() }
+      if (cb_input.includes("!treat")) { retString = this.randomTreatEmoji() }
+      if (cb_input.includes("!purr")) { outputFlag = true; retString = "Purrr" }
+      if (cb_input.includes("!pineapple")) { outputFlag = true; retString = ":pineapple:" }
 
       // Play (anything)
       if (cb_input.includes("!play")) {
@@ -63,9 +49,10 @@ module.exports = {
         }
 
         console.log("play: " + tmpPlay)
+        retString = this.play(tmpPlay)
 
         // set discord client "now playing"
-        client.user.setActivity(this.play(tmpPlay))
+        // client.user.setActivity()
       }
     }
 
@@ -81,7 +68,6 @@ module.exports = {
       var nowPlaying = this.randomPlaying()
     }
 
-    console.log(nowPlaying)
     return nowPlaying
   },
 
@@ -132,7 +118,7 @@ module.exports = {
   // *********************
   // * Support functions
   // *********************
-  
+
   randomFishEmoji: function() {
 
     var fishReaction = []
