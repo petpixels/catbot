@@ -96,7 +96,7 @@ client.on('ready', () => {
   var sayHello = catbot.reply()
   if (sayHello) {
     // 5% chance of failure
-    catbotChannel.send(sayHello)
+    // catbotChannel.send(sayHello)
   }
   logger.info("#catbot: " + sayHello)
 })
@@ -164,7 +164,7 @@ client.on('message', (receivedMessage) => {
       // Manual overrides (catbot commands):
       if (cb_input.includes("purr"))      { cb_output.push("Purrr"); outputFlag = true }
       if (cb_input.includes("moo"))       { cb_output.push("Moooo"); outputFlag = true }
-      if (cb_input.includes("oink"))      { cb_output.push("Oink!"); outputFlag = true }
+      if (cb_input.includes("oink"))      { cb_output.push("🐽"); outputFlag = true }
       if (cb_input.includes("quack"))     { cb_output.push("Quack!"); outputFlag = true }
 
       // Output Message (if any)
@@ -276,12 +276,14 @@ client.on('message', (receivedMessage) => {
   }
 
   // Random global meow
+  /*
+
   var randomGlobalReply = Math.random();
   if (randomReply < .05) {
     var cb_msg = catbot.reply(receivedMessage.content)
     receivedMessage.channel.send(cb_msg)
   }
-
+*/
 
   // console.log(receivedMessage.channel.id)
 })
