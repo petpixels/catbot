@@ -292,7 +292,7 @@ module.exports = {
     if (msg.includes("rattle")) { emoji.push("🐍") }
     if (msg.includes("blowhole")) { emoji.push("🐳") }
     if (msg.includes("spout")) { emoji.push("🐳") }
-    if (msg.includes("git")) { emoji.push("🐙") }
+    if (msg.includes(" git ")) { emoji.push("🐙") }
     if (msg.includes("cthulu")) { emoji.push("🦑") }
     if (msg.includes("calimari")) { emoji.push("🦑") }
     if (msg.includes("calamari")) { emoji.push("🦑") }
@@ -572,6 +572,7 @@ module.exports = {
     if (msg.includes("kungfu")) { emoji.push("🥋") }
     if (msg.includes("kung-fu")) { emoji.push("🥋") }
     if (msg.includes("golf")) { emoji.push("⛳") }
+    if (msg.includes("tee")) { emoji.push("⛳") }
     if (msg.includes("fore")) { emoji.push("⛳") }
     if (msg.includes("putt")) { emoji.push("⛳") }
     if (msg.includes("green")) { emoji.push("⛳") }

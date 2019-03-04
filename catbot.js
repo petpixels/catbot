@@ -167,7 +167,11 @@ client.on('message', (receivedMessage) => {
       if (cb_input.includes("purr"))      { cb_output.push("Purrr"); outputFlag = true }
       if (cb_input.includes("moo"))       { cb_output.push("Moooo"); outputFlag = true }
       if (cb_input.includes("oink"))      { cb_output.push("🐽"); outputFlag = true }
+      if (cb_input.includes("cluck"))     { cb_output.push("Bwaaak!"); outputFlag = true }
+
       if (cb_input.includes("quack"))     { cb_output.push("Quack!"); outputFlag = true }
+      if (cb_input.includes("duck"))     { cb_output.push("Quack!"); outputFlag = true }
+      if (cb_input.includes("fuck"))     { cb_output.push("Quack!"); outputFlag = true }
 
       // Output Message (if any)
 
@@ -201,7 +205,7 @@ client.on('message', (receivedMessage) => {
             var outputRandom = Math.random()
             // weighted probability of # of meows vs other responses
             if (notMeow.length > 0) {
-              console.log("Not meow: " + retString)
+              // console.log("Not meow: " + retString)
 
               if (outputRandom < (meowCount/10)) {
                 // get random other reply
@@ -248,14 +252,15 @@ client.on('message', (receivedMessage) => {
     var catEmoji = catbot.react(receivedMessage.content)
     if (catEmoji) {
       for (var i = 0; i < catEmoji.length; i++) {
+        logger.info("Reacted to: <" + channel.id + "> " + receivedMessage.content + " with emoji " + catEmoji[i] )
         receivedMessage.react(catEmoji[i])
       }
     }
 
     // Cat always replies to direct messages outside of catbot channel
     // I wonder how long that's going to last...
-    if (receivedMessage.content.includes("551263363884122122")) {
-      console.log('@tagged')
+    if (receivedMessage.content.includes("551263363884122122")) { // why?
+      logger.info('@tagged')
       var cb_msg = catbot.reply()
       receivedMessage.channel.send(cb_msg)
     }
@@ -277,15 +282,15 @@ client.on('message', (receivedMessage) => {
     cb_output.push(catbot.reply(receivedMessage.content.toLowerCase()))
   }
 
-  // Random global meow
-  /*
+  // Random global meom
 
   var randomGlobalReply = Math.random();
   if (randomReply < .05) {
     var cb_msg = catbot.reply(receivedMessage.content)
+    logger.info("Random Global Reply: " + cb_msg + " to " + receivedMessage.content)
     receivedMessage.channel.send(cb_msg)
   }
-*/
+
 
   // console.log(receivedMessage.channel.id)
 })
