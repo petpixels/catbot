@@ -3,17 +3,14 @@
 const catbot_secret = require("./catbot-secret")
 const bot_secret_token = catbot_secret.bot_secret_token
 
-const uuid = require('uuid')
-const id = uuid.v1()
-
-const catbot = require("./catbot-functions")
-
 const Discord = require('discord.js')
 const client = new Discord.Client()
 
+const catbot = require("./catbot-functions")
 const catbotUserID = "CatBot#8780"
 
 // channels (probably shouldn't be hardcoded)
+// maybe create a clever algorithm that searches for a channel named catbot
 const chan_general = "421090801393598466"
 const chan_catbot = "551271365508857866"
 const chan_cleverbot = "548078165936046080"
@@ -23,14 +20,13 @@ require('winston-daily-rotate-file');
 
 const fs = require('fs');
 const path = require('path');
+const request = require('request');
 
 const env = process.env.NODE_ENV || 'development';
 const logDir = 'logs';
 
 // Create the log directory if it does not exist
-if (!fs.existsSync(logDir)) {
-  fs.mkdirSync(logDir);
-}
+if (!fs.existsSync(logDir)) { fs.mkdirSync(logDir); }
 
 // const filename = path.join(logDir, 'catbot.log');
 const dailyRotateFileTransport = new transports.DailyRotateFile({
@@ -61,54 +57,49 @@ const logger = createLogger({
     //new transports.File({ filename })
   ]
 });
-
+/*
 process.on('uncaughtException', function(err) {
   logger.debug(err)
 
   // set discord client "now playing"
   client.user.setActivity(catbot.play("Dead"))
 });
-
+*/
 client.on('ready', () => {
-
-  logger.info("Connected as " + client.user.tag)
-
-  var startPlaying = catbot.play();
-  // set discord client "now playing"
-  client.user.setActivity(startPlaying)
-  logger.info("Now playing " + startPlaying)
-
-  // List servers the bot is connected to
-  /*
-  console.log("Servers:")
-  client.guilds.forEach((guild) => {
-      console.log(" - " + guild.name)
-
-      // List all channels
-      guild.channels.forEach((channel) => {
-          console.log(` -- ${channel.name} (${channel.type}) - ${channel.id}`)
-      })
-  })
-  */
-
   var generalChannel = client.channels.get(chan_general)
   var catbotChannel = client.channels.get(chan_catbot)
 
-  // say hello
+  logger.info("Connected as " + client.user.tag)
+
+  // set discord client "now playing"
+  var startPlaying = catbot.play();
+  client.user.setActivity(startPlaying)
+  logger.info("Now playing " + startPlaying)
+
+  // say hello on boot
   var sayHello = catbot.reply()
+  var saidHello = false;
   if (sayHello) {
-    // 5% chance of failure
-    // catbotChannel.send(sayHello)
+    // bot stays quiet in dev mode because
+    // it gets rebooted alot
+    if (env != "development") {
+      catbotChannel.send(sayHello)
+      saidHello = true;
+    }
+
   }
   logger.info("#catbot: " + sayHello)
+  logger.info("#catbot: " + saidHello + " | " + sayHello)
 })
 
+// Rat on people who delete messages and save a log of it
 client.on('messageDelete', (receivedMessage) => {
   receivedMessage.channel.send("Mao")
   logger.info("<" + receivedMessage.channel.id + "> @catbot: Mao")
   logger.info("Deleted message: \"" + receivedMessage + "\"")
 })
 
+// Welcome new members
 client.on('guildMemberAdd', msg => {
   var newUserGreeting = catbot.reply();
   msg.guild.channels.get(chan_general).send(newUserGreeting)
@@ -118,25 +109,103 @@ client.on('guildMemberAdd', msg => {
 
 })
 
+// Reply to messages
 client.on('message', (receivedMessage) => {
   var replyRequired = false
+  var suppressOutput = false;
 
   // Prevent bot from responding to its own messages
   if (receivedMessage.author == client.user) { return } // catch and release
 
+  // Check if the bot's user was tagged in the message
+  // Always reply to messages from any channel
+  if (receivedMessage.isMentioned(client.user)) {
+    var silent = false
+
+    // Get acknowledgement message from catbot
+    var direct_input = receivedMessage.content.toLowerCase()
+    var direct_output = catbot.reply(direct_input)
+
+    // Log acknowledgement message
+    logger.info("Tagged message received from " + receivedMessage.author.toString() + ": " + receivedMessage.content)
+
+    var msg = receivedMessage.content;
+
+    // Set catbot status
+    // Play (anything)
+    if (msg.toLowerCase().includes("!pineapple")) {
+      receivedMessage.channel.send("🍍")
+      logger.info("<" + receivedMessage.channel.id + "> @catbot: 🍍")
+      silent = true // because we already sent a pineapple
+    }
+
+    if (msg.toLowerCase().includes("!gif")) {
+      var url = "https://api.giphy.com/v1/gifs/random?api_key=9nbVwPCSeiP6Hh17oPJkMCRnYpA99FUO&tag=cat%20kitten&rating=PG";
+      silent = true
+
+      request.get({
+        url: url,
+        json: true,
+        headers: {'User-Agent': 'request'}
+      }, (err, res, data) => {
+        if (err) {
+          logger.info("Giphy request failed")
+        } else if (res.statusCode !== 200) {
+          logger.info("Giphy request succeeded")
+        } else {
+          // data is already parsed as JSON:
+          var received = data
+          // loop through each data object because there can be more than one
+          for (var data in received) {
+            var giphy = received[data];
+            receivedMessage.channel.send(giphy.embed_url)
+            logger.info("<" + receivedMessage.channel.id + "> @catbot: " + giphy.embed_url)
+
+            // console.log(data+": "+received[data]);
+          }
+
+        }
+      });
+    }
+
+    if (msg.toLowerCase().includes("!play")) {
+      var aPlay = msg.split(" ") // because it's not lowercase
+      var tmpPlay = ""
+      var playLoc = 0
+
+      // double iteration has got to be a bad idea
+      // but if it's stupid and it works it's not stupid
+      for (var i = 0; i < aPlay.length; i++) {
+        if (aPlay[i] == "!play") {
+          playLoc = i+1
+        }
+      }
+
+      for (var i = playLoc; i < aPlay.length; i++) {
+        tmpPlay = tmpPlay + " " + aPlay[i]
+      }
+
+      logger.info("Now playing " + tmpPlay)
+
+      // set discord client "now playing"
+      client.user.setActivity(tmpPlay)
+      silent = true
+    }
+
+    // Send acknowledgement message
+    if (!(silent)) {
+      receivedMessage.channel.send(direct_output)
+      logger.info("<" + receivedMessage.channel.id + "> @catbot: " + cb_msg)
+    } else {
+      logger.info("<" + receivedMessage.channel.id + "> @catbot (silenced): " + cb_msg)
+    }
+
+    suppressOutput = true
+  }
+
   // In the catbot channel
   if ((receivedMessage.channel.id == chan_catbot) || (receivedMessage.channel.id == chan_cleverbot)) {
     replyRequired = true
-
-    // Check if the bot's user was tagged in the message
-    if (receivedMessage.content.includes(client.user.toString())) {
-      // Send acknowledgement message
-      logger.info("Tagged message received: " + receivedMessage.content)
-      var cb_input = receivedMessage.content.toLowerCase()
-
-      var cb_msg = catbot.reply(cb_input)
-      receivedMessage.channel.send(cb_msg)
-    }
 
     // get a message from cb
     var cb_input = receivedMessage.content.toLowerCase()
@@ -229,30 +298,24 @@ client.on('message', (receivedMessage) => {
 
           logger.info("<" + receivedMessage.channel.id + "> @catbot: " + retString)
 
-          if (retString) {
+          if (retString && (!(suppressOutput))) {
             receivedMessage.channel.send(retString)
+          }
+
+          // log suppressed message
+          if (retString && (suppressOutput)) {
+            logger.info("<" + receivedMessage.channel.id + "> @catbot: (Message Suppressed) " + retString)
           }
         }
       }
     }
   } else {
-    // Check if the bot's user was tagged in the message
-    if (receivedMessage.content.includes(client.user.toString())) {
-      // Send acknowledgement message
-      logger.info("Tagged message received from @" + client.user.toString() + ": " + receivedMessage.content)
-      var cb_input = receivedMessage.content.toLowerCase()
-
-      var cb_msg = catbot.reply(cb_input)
-      logger.info("<" + receivedMessage.channel.id + "> @catbot: " + cb_msg)
-
-      receivedMessage.channel.send(cb_msg)
-    }
-
     // React to "cat" in messages outside of the catbot channel
+    // This should probably be a different bot.
     var catEmoji = catbot.react(receivedMessage.content)
     if (catEmoji) {
       for (var i = 0; i < catEmoji.length; i++) {
-        logger.info("Reacted to: <" + channel.id + "> " + receivedMessage.content + " with emoji " + catEmoji[i] )
+        logger.info("Reacted to: <" + receivedMessage.channel.id + "> " + receivedMessage.content + " with emoji " + catEmoji[i])
         receivedMessage.react(catEmoji[i])
       }
     }

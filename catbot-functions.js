@@ -1,5 +1,4 @@
 module.exports = {
-
   reply: function(msg) {
     var cb_input
     if (msg) { cb_input = msg.toString().toLowerCase() }
@@ -30,32 +29,6 @@ module.exports = {
       if (cb_input.includes("!purr")) { outputFlag = true; retString = "Purrr" }
       if (cb_input.includes("!pineapple")) { outputFlag = true; retString = ":pineapple:" }
 
-      // Play (anything)
-      if (cb_input.includes("!play")) {
-        outputFlag = false
-
-        var aPlay = msg.split(" ") // because it's not lowercase
-        var tmpPlay = ""
-        var playLoc = 0
-
-        // double iteration has got to be a bad idea
-        // but if it's stupid and it works it's not stupid
-        for (var i = 0; i < aPlay.length; i++) {
-          if (aPlay[i] == "!play") {
-            playLoc = i+1
-          }
-        }
-
-        for (var i = playLoc; i < aPlay.length; i++) {
-          tmpPlay = tmpPlay + " " + aPlay[i]
-        }
-
-        console.log("play: " + tmpPlay)
-        retString = this.play(tmpPlay)
-
-        // set discord client "now playing"
-        // client.user.setActivity()
-      }
     }
 
     return retString
@@ -135,6 +108,8 @@ module.exports = {
     if (msg.includes("owl")) { emoji.push("🦉") }
     if (msg.includes("pand")) { emoji.push("🐼") }
     if (msg.includes("pig")) { emoji.push("🐷") }
+    if (msg.includes("oink")) { emoji.push("🐽") }
+    if (msg.includes("moo")) { emoji.push("🐮") }
     if (msg.includes("porc")) { emoji.push("🐷") }
     if (msg.includes("pork")) { emoji.push("🐷") }
     if (msg.includes("rabbit")) { emoji.push("🐰") }
