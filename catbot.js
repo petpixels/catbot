@@ -1,6 +1,7 @@
 const bot_secret = require('./lib/bot-secret')
 var catbot = require('./lib/bot');
 
+var cat_functions = require('./lib/catbot-functions');
 var cat = new catbot()
 
 const discord = require('discord.js')
@@ -27,9 +28,10 @@ process.on('uncaughtException', function(err) {
   client.user.setActivity(catbot.play("Dead"))
 });
 */
+var catChannel
+
 client.on('ready', () => {
 	var sayHello = true
-	var catChannel
 
 	cat.name("Cat")
 	cat.default_reply("Meow")
@@ -59,7 +61,7 @@ client.on('ready', () => {
 
 // Rat on people who delete messages and save a log of it
 client.on('messageDelete', (receivedMessage) => {
-  cat.say("Mao")
+  cat.say("Mao", receivedMessage.channel)
   cat.log("Deleted message: \"" + receivedMessage + "\"")
 })
 
@@ -86,18 +88,18 @@ client.on('guildMemberAdd', msg => {
 
 // Reply to messages
 client.on('message', (receivedMessage) => {
+	var silent = false
   var replyRequired = false
-  var suppressOutput = false;
 
   // Prevent bot from responding to its own messages
   if (receivedMessage.author == client.user) { return } // catch and release
 
 
 	var msg = receivedMessage.content;
-	emu.log(receivedMessage.channel + msg)
+	cat.log(receivedMessage.channel + msg)
 
 	if (receivedMessage.content.includes("cat")) {
-		receivedMessage.react("🐤") // random cat emoji
+		// receivedMessage.react("🐤") // random cat emoji
 	}
 
 	// Check if the bot's user was tagged in the message
@@ -126,26 +128,26 @@ client.on('message', (receivedMessage) => {
 			cat.play(msg)
 		}
 
-		if (cb_input.includes("!treat")) {
+		if (msg.includes("!treat")) {
 			silent = true
-			receivedMessage.channel.send(catbot.randomTreatEmoji())
+			receivedMessage.channel.send(cat_functions.randomTreatEmoji())
 		}
 
 		// Pineapple
-		if ((cb_input.includes("!pineapple")) || (cb_input == "🍍")) {
+		if ((msg.includes("!pineapple")) || (cb_input == "🍍")) {
 			silent = true
 			receivedMessage.channel.send("🍍")
 		}
 
 		// Fish
-		if (cb_input.includes("!fish")) {
+		if (msg.includes("!fish")) {
 			silent = true
-			receivedMessage.channel.send(catbot.randomFishEmoji())
+			receivedMessage.channel.send(cat_functions.randomFishEmoji())
 		}
 
 
 		if (!(silent)) {
-			emu.reply(receivedMessage.channel, receivedMessage.content)
+			cat.say(cat.reply(receivedMessage.content),receivedMessage.channel)
 		}
 	} else {
 
@@ -154,12 +156,12 @@ client.on('message', (receivedMessage) => {
 
 
   // In the catbot channel
-  if ((receivedMessage.channel.id == chan_catbot) || (receivedMessage.channel.id == chan_cleverbot)) {
+  if (receivedMessage.channel.id == chan_catbot) {
     replyRequired = true
 
     // get a message from cb
     var cb_input = receivedMessage.content.toLowerCase()
-    var cb_msg = catbot.reply(cb_input)
+    var cb_msg = cat.reply(cb_input)
     var cb_output = []
 
 
@@ -191,6 +193,11 @@ client.on('message', (receivedMessage) => {
       if (cb_input.includes("quack"))     { cb_output.push("Quack!"); outputFlag = true }
       if (cb_input.includes("duck"))     { cb_output.push("Quack!"); outputFlag = true }
       if (cb_input.includes("fuck"))     { cb_output.push("Quack!"); outputFlag = true }
+
+			if (!(outputFlag)) {
+				cb_output.push(cat.reply(cb_input))
+				outputFlag = true
+			}
 
       // Output Message (if any)
       if (cb_output) {
@@ -232,7 +239,7 @@ client.on('message', (receivedMessage) => {
                 var ret = Math.floor(Math.random() * notMeow.length)
                 retString = notMeow[ret]
               } else {
-                retString = catbot.reply(notMeow[ret]) // get generic reply
+                retString = cat.reply(notMeow[ret]) // get generic reply
               }
             } else {
               //output is meow
@@ -249,12 +256,12 @@ client.on('message', (receivedMessage) => {
 
           cat.log("<" + receivedMessage.channel.id + "> @catbot: " + retString)
 
-          if (retString && (!(suppressOutput))) {
-            cat.say(receivedMessage.channel, retString)
+          if ((retString) && (!(silent))) {
+            receivedMessage.channel.send(retString)
           }
 
           // log suppressed message
-          if (retString && (suppressOutput)) {
+          if (retString && (silent)) {
             cat.log("<" + receivedMessage.channel.id + "> @catbot: (Message Suppressed) " + retString)
           }
         }
@@ -282,6 +289,16 @@ client.on('message', (receivedMessage) => {
     }
   }
 
+	/*
+	var catEmoji = cat_functions.randomCatEmoji()
+	if (catEmoji) {
+		for (var i = 0; i < catEmoji.length; i++) {
+			cat.log("Reacted to: <" + receivedMessage.channel.id + "> " + receivedMessage.content + " with emoji " + catEmoji[i])
+			receivedMessage.react(catEmoji[i])
+		}
+	}
+	*/
+
   // Check if the bot's user was tagged in the message
   if (receivedMessage.content.includes(client.user.toString())) {
     // Send acknowledgement message
@@ -291,7 +308,7 @@ client.on('message', (receivedMessage) => {
 
   // Random global meom
   var randomGlobalReply = Math.random();
-  if (randomGlobalReply < .05) {
+  if ((randomGlobalReply < .05) && (receivedMessage.channel.id != chan_catbot)) {
 		cat.reply(receivedMessage.channel, receivedMessage.content)
     cat.log("Random Global Reply: " + cb_msg + " to " + receivedMessage.content)
     receivedMessage.channel.send(cb_msg)
