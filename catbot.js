@@ -20,6 +20,9 @@ const fs = require('fs');
 const path = require('path');
 const request = require('request');
 
+var Sentiment = require('sentiment');
+var sentiment = new Sentiment();
+
 /*
 process.on('uncaughtException', function(err) {
   logger.debug(err)
@@ -93,7 +96,10 @@ client.on('message', (receivedMessage) => {
 
   // Prevent bot from responding to its own messages
   if (receivedMessage.author == client.user) { return } // catch and release
-
+	if (receivedMessage.author.bot == true) {
+		silent = true
+		return
+	} // ignore bots
 
 	var msg = receivedMessage.content;
 	cat.log(receivedMessage.channel + msg)
@@ -254,6 +260,12 @@ client.on('message', (receivedMessage) => {
             }
           }
 
+					// ovrride random output with sentiment analysis
+					var catFeels = catSentiment(receivedMessage.content)
+					if (catFeels) {
+						retString = catFeels
+					}
+
           cat.log("<" + receivedMessage.channel.id + "> @catbot: " + retString)
 
           if ((retString) && (!(silent))) {
@@ -316,5 +328,39 @@ client.on('message', (receivedMessage) => {
 
   // console.log(receivedMessage.channel.id)
 })
+
+function catSentiment(msg) {
+	// give the cat a mood
+	var catSentiment = sentiment.analyze(msg)
+	var catPositive = ["😺","😸","😻","😹","😽"]
+	var catNegative = ["🦁","😼","🙀","😿","😾"]
+
+	//positive emotions
+	//var catReturnEmoji = "🐈"
+	var catReturnEmoji
+	if (catSentiment.score > 0) {
+		if (catSentiment.score <= 5) {
+			catReturnEmoji = catPositive[catSentiment.score -1]
+		} else {
+			catReturnEmoji = catPositive[4]
+		}
+	}
+
+	// negative emotions
+	if (catSentiment.score < 0) {
+		if (catSentiment.score >= -5) {
+			catReturnEmoji = catNegative[((catSentiment.score -1) * -1)]
+		} else {
+			catReturnEmoji = catNegative[4]
+		}
+	}
+
+	console.log(catSentiment)
+
+	if (catReturnEmoji) {
+		console.log("Return: " + catReturnEmoji)
+		return catReturnEmoji
+	}
+}
 
 client.login(bot_secret.bot_secret_token)
