@@ -26,7 +26,12 @@ const request = require('request');
 var Sentiment = require('sentiment');
 var sentiment = new Sentiment();
 
+var catsMeow = []
 var naughty_list = []
+
+var naughtyList = loadNaughtyList()
+var catReplies = getCatReplies()
+
 /*
 process.on('uncaughtException', function(err) {
   logger.debug(err)
@@ -37,21 +42,20 @@ process.on('uncaughtException', function(err) {
 */
 var catChannel
 
-loadNaughtyList()
 
 client.on('ready', () => {
 	var sayHello = true
 
-	cat.name("Cat")
-	cat.default_reply("Meow")
-	cat.keywords("cat,kitten")
-	cat.rating("G")
-	cat.odds(.5)
-	cat.bot_odds = .5
-	cat.log("Connected as " + client.user.tag)
+	cat.bot_name = "Cat"
+	cat.bot_reply = "Meow"
+	cat.bot_keywords = "cat,kitten"
+	cat.bot_rating = "G"
+	cat.bot_odds = .25
+	cat.bot_channel = chan_catbot
+	cat.replies = catsMeow
+	cat.log("Connected as catbot")
 
 	// locate catbot channel
-
 	client.guilds.forEach((guild) => {
 
 		guild.channels.forEach((channel) => {
@@ -93,10 +97,12 @@ client.on('guildMemberAdd', msg => {
 		})
 	})
 
-	cat.reply(msg.guild.channels.get(genChannel));
+	var msg = {}
+	msg.text = "Hello"
+	var greeting = cat_functions.reply(cat, {} ,msg);
 
-  cat.log("New User: " + msg)
-  cat.log("<" + receivedMessage.channel.id + "> @catbot: " + newUserGreeting)
+  cat.log("New User: " + greeting)
+  cat.log("<" + receivedMessage.channel.id + "> @catbot: " + greeting)
 
 })
 
@@ -121,7 +127,7 @@ client.on('messageReactionAdd', (reaction, user) => {
 			}
 
 			if (catFeeling.score == 0) {
-				reply = cat.reply(reaction.emoji.name)
+				reply = cat_functions.reply(reaction.emoji.name)
 			}
 
 			var catEmotion = Math.random()
@@ -236,7 +242,7 @@ client.on('message', (receivedMessage) => {
 
 
 		if (!(silent)) {
-			cat.say(cat.reply(receivedMessage.content),receivedMessage.channel)
+			cat.say(cat_functions.reply(receivedMessage.content),receivedMessage.channel)
 		}
 	} else {
 
@@ -250,9 +256,11 @@ client.on('message', (receivedMessage) => {
 
     // get a message from cb
     var cb_input = receivedMessage.content.toLowerCase()
-    var cb_msg = cat.reply(cb_input)
-    var cb_output = []
 
+		var tmp_input = {}
+		tmp_input.text = cb_input
+    var cb_msg = cat_functions.reply(cat,{},tmp_input)
+    var cb_output = []
 
     // incoming message cannot be blank
     if (cb_msg) {
@@ -284,7 +292,9 @@ client.on('message', (receivedMessage) => {
       if (cb_input.includes("fuck"))     { cb_output.push("Quack!"); outputFlag = true }
 
 			if (!(outputFlag)) {
-				cb_output.push(cat.reply(cb_input))
+				var tmpInput = {}
+				tmpInput.text = cb_input
+				cb_output.push(cat_functions.reply(cat, {}, tmpInput))
 				outputFlag = true
 			}
 
@@ -328,7 +338,9 @@ client.on('message', (receivedMessage) => {
                 var ret = Math.floor(Math.random() * notMeow.length)
                 retString = notMeow[ret]
               } else {
-                retString = cat.reply(notMeow[ret]) // get generic reply
+								var tmpInput = {}
+								tmpInput.text = notMeow[ret]
+                retString = cat_functions.reply(cat, {}, tmpInput) // get generic reply
               }
             } else {
               //output is meow
@@ -384,7 +396,7 @@ client.on('message', (receivedMessage) => {
     // I wonder how long that's going to last...
     if (receivedMessage.content.includes("551263363884122122")) { // why?
       cat.log('@tagged')
-      cat.reply(receivedMessage.channel, receivedMessage.content)
+      cat_functions.reply(cat, {}, receivedMessage.content)
       //receivedMessage.channel.send(cb_msg)
     }
   }
@@ -403,13 +415,13 @@ client.on('message', (receivedMessage) => {
   if (receivedMessage.content.includes(client.user.toString())) {
     // Send acknowledgement message
     outputFlag = true
-    cat.reply(receivedMessage.channel, receivedMessage.content)
+    cb_msg = cat_functions.reply(cat, {}, receivedMessage.content)
   }
 
   // Random global meom
   var randomGlobalReply = Math.random();
   if ((randomGlobalReply < .05) && (receivedMessage.channel.id != chan_catbot)) {
-		cat.reply(receivedMessage.channel, receivedMessage.content)
+		cat_functions.reply(receivedMessage.channel, receivedMessage.content)
     cat.log("Random Global Reply: " + cb_msg + " to " + receivedMessage.content)
     receivedMessage.channel.send(cb_msg)
   }
@@ -532,36 +544,40 @@ function logDelete(message) {
 }
 
 
-function loadNaughtyList() {
-	var retVal
-	console.log("Loading training data")
-	MongoClient.connect(db_url, function(err, db) {
+function loadNaughtyList(user = "") {
+	var query = { }
+	if (user) {
+		query.user = user
+	}
 
-		var cat_db = db.db("catbot")
-		var cat_messages = cat_db.collection("messages")
-
-		//user_training.find().toArray(function(err, items) {})
-		//console.log(client.guilds.GuildMemberGet("408701272343052290"))
-		cat_messages.find({},{ date:1,user:1,text:1, _id:0}).sort( { user: 1 } ).toArray(function(err, result) {
-    	if (err) throw err
-
-			//console.log(tmp.user)
-			var last_user
-			result.forEach(function(item) {
-				//console.log(item.user + " : " + item.sentiment)
-				//global_training_bad.push(item.user)
-				if (item.user != last_user) {
-					console.log(item.user)
-					naughty_list.push(item)
-				}
-				last_user = item.user
-			})
-	  })
-	})
+	var formatting = { date:1,user:1,text:1, _id:0}
+		var initializePromise = cat.getDataMongo("catbot","messages",query,formatting)
+		initializePromise.then(function(result) {
+				naughty_list = result
+				console.log("Initialized naughty list");
+				// Use user details from here
+				return result
+				resolve(result)
+		}, function(err) {
+				console.log(err);
+		})
 }
 
-
-
+function getCatReplies() {
+	var query = { }
+	var formatting = { }
+		var initializePromise = cat.getDataMongo("catbot","replies",query,formatting)
+		initializePromise.then(function(result) {
+				catsMeow = result
+				console.log("Initialized cat replies");
+				// Use user details from here
+				//console.log(catsMeow)
+				return result
+				resolve(result)
+		}, function(err) {
+				console.log(err);
+		})
+}
 
 
 
