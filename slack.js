@@ -100,6 +100,7 @@ controller.on('rtm_open', function (bot) {
 	cat.bot_rating = "G"
 	cat.bot_odds = .25
 	cat.bot_channel = chan_catbot
+	cat.bot_platform = "slack"
 	cat.replies = catsMeow
 	cat.log("Connected as catbot")
 
@@ -142,7 +143,7 @@ controller.on(['message_deleted', 'message_changed'], function (bot, message) {
 	deleted.date = Math.round(+new Date()/1000) // unix datestamp
 	deleted.user = message.previous_message.user
 	deleted.text = message.previous_message.text
-	deleted.platform = "slack"
+	deleted.platform = cat.bot_platform
 
 	cat.insertDataMongo(deleted, "catbot", "deleted", {}, {})
 

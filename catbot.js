@@ -52,6 +52,7 @@ client.on('ready', () => {
 	cat.bot_rating = "G"
 	cat.bot_odds = .25
 	cat.bot_channel = chan_catbot
+	cat.bot_platform = "discord"
 	cat.replies = catsMeow
 	cat.log("Connected as catbot")
 
@@ -531,6 +532,7 @@ function logDelete(message) {
 		deleted.date = Math.round(+new Date()/1000) // unix datestamp
 		deleted.user = message.author.id
 		deleted.text = message.content.toString()
+		deleted.platform = cat.bot_platform
 
 		var result = collection.insertOne(deleted, function(err,result) {
 			if (err) throw err
