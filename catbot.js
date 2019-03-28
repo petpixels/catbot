@@ -260,7 +260,7 @@ client.on('message', (receivedMessage) => {
 
 		var tmp_input = {}
 		tmp_input.text = cb_input
-    var cb_msg = cat_functions.reply(cat,{},tmp_input)
+    var cb_msg = cat_functions.reply(cat,receivedMessage.channel,tmp_input)
     var cb_output = []
 
     // incoming message cannot be blank
