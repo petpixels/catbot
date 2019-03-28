@@ -4,6 +4,9 @@ var catbot = require('./lib/bot');
 var cat_functions = require('./lib/catbot-functions');
 var cat = new catbot()
 
+const MongoClient = require('mongodb').MongoClient
+const db_url = bot_secret.mongo_url
+
 const discord = require('discord.js')
 const client = new discord.Client()
 
@@ -23,6 +26,7 @@ const request = require('request');
 var Sentiment = require('sentiment');
 var sentiment = new Sentiment();
 
+var naughty_list = []
 /*
 process.on('uncaughtException', function(err) {
   logger.debug(err)
@@ -33,6 +37,8 @@ process.on('uncaughtException', function(err) {
 */
 var catChannel
 
+loadNaughtyList()
+
 client.on('ready', () => {
 	var sayHello = true
 
@@ -41,10 +47,13 @@ client.on('ready', () => {
 	cat.keywords("cat,kitten")
 	cat.rating("G")
 	cat.odds(.5)
+	cat.bot_odds = .5
 	cat.log("Connected as " + client.user.tag)
 
 	// locate catbot channel
+
 	client.guilds.forEach((guild) => {
+
 		guild.channels.forEach((channel) => {
 			//console.log(` -- ${channel.name} (${channel.type}) - ${channel.id}`)
 			if (channel.name.includes("catbot")) {
@@ -66,6 +75,8 @@ client.on('ready', () => {
 client.on('messageDelete', (receivedMessage) => {
   cat.say("Mao", receivedMessage.channel)
   cat.log("Deleted message: \"" + receivedMessage + "\"")
+
+	logDelete(receivedMessage)
 })
 
 // Welcome new members
@@ -89,6 +100,50 @@ client.on('guildMemberAdd', msg => {
 
 })
 
+
+client.on('messageReactionAdd', (reaction, user) => {
+	var username = user.username.toLowerCase()
+	if (!(user.bot)) {
+
+		var catFeeling = sentiment.analyze(reaction.emoji.name)
+		console.log(reaction.emoji.name)
+		console.log(catFeeling.score)
+
+		var msg_author = reaction.message.author.username.toLowerCase()
+		if (msg_author.includes("catbot")) {
+			var reply
+			if (catFeeling.score > 0) {
+				var reply = "Yum!"
+			}
+
+			if (catFeeling.score < 0) {
+				var reply = "Yuck!"
+			}
+
+			if (catFeeling.score == 0) {
+				reply = cat.reply(reaction.emoji.name)
+			}
+
+			var catEmotion = Math.random()
+			if ((catEmotion < cat.bot_odds) && (catFeeling.score != 0)) {
+				var reply = catEmoji(catFeeling.score)
+			}
+
+			console.log("REPLY: ")
+			console.log(reply)
+			if (reply) {
+				var cat_treat = {}
+				cat_treat.text = reaction.emoji.name
+				cat_treat.user = reaction.message.author.id
+				cat_treat.score = catFeeling.score
+
+				logTreat(cat_treat)
+				reaction.message.channel.send(reply)
+			}
+		}
+	}
+})
+
 // Reply to messages
 client.on('message', (receivedMessage) => {
 	var silent = false
@@ -96,7 +151,35 @@ client.on('message', (receivedMessage) => {
 
   // Prevent bot from responding to its own messages
   if (receivedMessage.author == client.user) { return } // catch and release
+
+	// making a list, checking it once...
+	for (var i = 0; i < naughty_list.length; i++) {
+		var nl_item = naughty_list[i]
+		if (receivedMessage.author.id == nl_item.user) {
+			// user is on the naughty list
+			console.log(nl_item)
+			receivedMessage.react("💩")
+		}
+	}
+
 	if (receivedMessage.author.bot == true) {
+
+		// if it's the dog
+		if (receivedMessage.author.username == "DogBot") {
+			var dogMsg = receivedMessage.content.toLowerCase()
+			if ((dogMsg.includes("grr")) || (dogMsg.includes("bark"))) {
+				// cat logs all negative dog messages
+				receivedMessage.channel.fetchMessages({ limit: 2 }).then(messages => {
+					lastMessage = messages.last()
+
+					if (!(lastMessage.author.bot)) {
+						logMessage(lastMessage)
+					}
+				})
+				.catch(console.error)
+			}
+		}
+
 		silent = true
 		return
 	} // ignore bots
@@ -260,10 +343,15 @@ client.on('message', (receivedMessage) => {
             }
           }
 
-					// ovrride random output with sentiment analysis
-					var catFeels = catSentiment(receivedMessage.content)
-					if (catFeels) {
-						retString = catFeels
+					// ovrride output with sentiment analysis
+					// but only on an overwhelming outpouring of emotion
+					// aka a random chance... lol
+					var randomFeels = Math.random()
+					if (randomFeels < cat.bot_odds) { // 25% chance
+						var catFeels = catSentiment(receivedMessage.content)
+						if (catFeels) {
+							retString = catFeels
+						}
 					}
 
           cat.log("<" + receivedMessage.channel.id + "> @catbot: " + retString)
@@ -331,36 +419,152 @@ client.on('message', (receivedMessage) => {
 
 function catSentiment(msg) {
 	// give the cat a mood
+
 	var catSentiment = sentiment.analyze(msg)
-	var catPositive = ["😺","😸","😻","😹","😽"]
-	var catNegative = ["🦁","😼","🙀","😿","😾"]
-
-	//positive emotions
-	//var catReturnEmoji = "🐈"
-	var catReturnEmoji
-	if (catSentiment.score > 0) {
-		if (catSentiment.score <= 5) {
-			catReturnEmoji = catPositive[catSentiment.score -1]
-		} else {
-			catReturnEmoji = catPositive[4]
-		}
-	}
-
-	// negative emotions
-	if (catSentiment.score < 0) {
-		if (catSentiment.score >= -5) {
-			catReturnEmoji = catNegative[((catSentiment.score -1) * -1)]
-		} else {
-			catReturnEmoji = catNegative[4]
-		}
-	}
 
 	console.log(catSentiment)
+	catReturnEmoji = catEmoji(catSentiment.score)
 
 	if (catReturnEmoji) {
 		console.log("Return: " + catReturnEmoji)
 		return catReturnEmoji
 	}
 }
+
+function catEmoji(score) {
+	var retEmoji
+
+	var catPositive = ["😺","😸","😻","😹","😽"]
+	var catNegative = ["🦁","😼","🙀","😿","😾"]
+
+	//var catReturnEmoji = "🐈"
+
+	// negative emotions
+	if (score < 0) {
+		if (score >= -5) {
+			retEmoji = catNegative[((score -1) * -1)]
+		} else {
+			retEmoji = catNegative[4]
+		}
+	}
+	//positive emotions
+	var catReturnEmoji
+	if (score > 0) {
+		if (score <= 5) {
+			retEmoji = catPositive[score -1]
+		} else {
+			retEmoji = catPositive[4]
+		}
+	}
+
+	return retEmoji
+}
+
+
+
+function logMessage(message) {
+	MongoClient.connect(db_url, function(err, client) {
+		if (err) throw err
+
+		//var dictionary_db = db.db("emuji")
+		const collection = client.db("catbot").collection("messages")
+		var msg = {}
+		msg.date = Math.round(+new Date()/1000) // unix datestamp
+		msg.user = message.author.id
+		msg.text = message.content.toString()
+
+		var result = collection.insertOne(msg, function(err,result) {
+			if (err) throw err
+
+			console.log("Logged: ")
+			console.log(msg)
+
+			return
+		})
+	})
+}
+
+function logTreat(cat_treat) {
+	var input_treat = cat_treat
+	MongoClient.connect(db_url, function(err, client) {
+		if (err) throw err
+
+		//var dictionary_db = db.db("emuji")
+		const collection = client.db("catbot").collection("treats")
+		var treat = {}
+		treat.date = Math.round(+new Date()/1000) // unix datestamp
+		treat.user = input_treat.user
+		treat.text = input_treat.text
+		treat.score = input_treat.score
+
+		var result = collection.insertOne(treat, function(err,result) {
+			if (err) throw err
+
+			console.log("Logged: ")
+			console.log(msg)
+
+			return
+		})
+	})
+
+}
+
+function logDelete(message) {
+	MongoClient.connect(db_url, function(err, client) {
+		if (err) throw err
+
+		//var dictionary_db = db.db("emuji")
+		const collection = client.db("catbot").collection("deleted")
+		var deleted = {}
+		deleted.date = Math.round(+new Date()/1000) // unix datestamp
+		deleted.user = message.author.id
+		deleted.text = message.content.toString()
+
+		var result = collection.insertOne(deleted, function(err,result) {
+			if (err) throw err
+
+			console.log("Deleted: ")
+			console.log(deleted)
+
+			return
+		})
+	})
+}
+
+
+function loadNaughtyList() {
+	var retVal
+	console.log("Loading training data")
+	MongoClient.connect(db_url, function(err, db) {
+
+		var cat_db = db.db("catbot")
+		var cat_messages = cat_db.collection("messages")
+
+		//user_training.find().toArray(function(err, items) {})
+		//console.log(client.guilds.GuildMemberGet("408701272343052290"))
+		cat_messages.find({},{ date:1,user:1,text:1, _id:0}).sort( { user: 1 } ).toArray(function(err, result) {
+    	if (err) throw err
+
+			//console.log(tmp.user)
+			var last_user
+			result.forEach(function(item) {
+				//console.log(item.user + " : " + item.sentiment)
+				//global_training_bad.push(item.user)
+				if (item.user != last_user) {
+					console.log(item.user)
+					naughty_list.push(item)
+				}
+				last_user = item.user
+			})
+	  })
+	})
+}
+
+
+
+
+
+
+
 
 client.login(bot_secret.bot_secret_token)
