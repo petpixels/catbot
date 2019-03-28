@@ -10,7 +10,7 @@ const db_url = bot_secret.mongo_url
 const slack_api_key = bot_secret.slack
 
 //const catbot = require("./lib/catbot-functions")
-const catbotUserID = "CatBot#8780"
+const catbotUserID = "UH0QETX3K"
 
 // channels (probably shouldn't be hardcoded)
 // maybe create a clever algorithm that searches for a channel named catbot
@@ -135,6 +135,20 @@ controller.on('bot_channel_join', function (bot, message) {
   bot.reply(message, cat.bot_reply)
 })
 
+controller.on(['message_deleted', 'message_changed'], function (bot, message) {
+	console.log(message.previous_message.user + ": " + message.previous_message.text)
+
+	var deleted = {}
+	deleted.date = Math.round(+new Date()/1000) // unix datestamp
+	deleted.user = message.previous_message.user
+	deleted.text = message.previous_message.text
+	deleted.platform = "slack"
+
+	cat.insertDataMongo(deleted, "catbot", "deleted", {}, {})
+
+	var deletedReply = "Mao"
+  bot.reply(message, deletedReply)
+})
 
 controller.hears('', ['direct_mention', 'message', 'mention', 'direct_message'], function(bot, message) {
 	// reply to all direct messages
