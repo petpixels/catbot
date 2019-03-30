@@ -137,18 +137,20 @@ controller.on('bot_channel_join', function (bot, message) {
 })
 
 controller.on(['message_deleted', 'message_changed'], function (bot, message) {
-	console.log(message.previous_message.user + ": " + message.previous_message.text)
+	if (message.previous_message.user != catbotUserID) {
+		console.log(message.previous_message.user + ": " + message.previous_message.text)
 
-	var deleted = {}
-	deleted.date = Math.round(+new Date()/1000) // unix datestamp
-	deleted.user = message.previous_message.user
-	deleted.text = message.previous_message.text
-	deleted.platform = cat.bot_platform
+		var deleted = {}
+		deleted.date = Math.round(+new Date()/1000) // unix datestamp
+		deleted.user = message.previous_message.user
+		deleted.text = message.previous_message.text
+		deleted.platform = cat.bot_platform
 
-	cat.insertDataMongo(deleted, "catbot", "deleted", {}, {})
+		cat.insertDataMongo(deleted, "catbot", "deleted", {}, {})
 
-	var deletedReply = "Mao"
-  bot.reply(message, deletedReply)
+		var deletedReply = "Mao"
+	  bot.reply(message, deletedReply)
+	}
 })
 
 controller.hears('', ['direct_mention', 'message', 'mention', 'direct_message'], function(bot, message) {

@@ -16,8 +16,9 @@ const catbotUserID = "CatBot#8780"
 // channels (probably shouldn't be hardcoded)
 // maybe create a clever algorithm that searches for a channel named catbot
 const chan_general = "421090801393598466"
-const chan_catbot = "551271365508857866"
+//const chan_catbot = "" "551271365508857866","520744286275239946"
 const chan_cleverbot = "548078165936046080"
+var chan_catbot = []
 
 const fs = require('fs');
 const path = require('path');
@@ -40,8 +41,6 @@ process.on('uncaughtException', function(err) {
   client.user.setActivity(catbot.play("Dead"))
 });
 */
-var catChannel
-
 
 client.on('ready', () => {
 	var sayHello = true
@@ -60,10 +59,11 @@ client.on('ready', () => {
 	client.guilds.forEach((guild) => {
 
 		guild.channels.forEach((channel) => {
-			//console.log(` -- ${channel.name} (${channel.type}) - ${channel.id}`)
+			console.log(` -- ${channel.name} (${channel.type}) - ${channel.id}`)
 			if (channel.name.includes("catbot")) {
-				catChannel = channel
-				// cat.channel(channel) // this doesn't work and I don't know why
+				//catChannel = channel
+				chan_catbot.push(channel)
+				cat.bot_channel = chan_catbot // this doesn't work and I don't know why
 			}
 		})
 	})
@@ -71,8 +71,12 @@ client.on('ready', () => {
 	// set discord client "now playing"
 	client.user.setActivity(cat.play())
 
+	for (var i in chan_catbot) {
+		var tmpChan = chan_catbot[i]
+		//console.log(tmpChan.id)
+		if (sayHello) { cat.say("Meow", tmpChan) }
+	}
 	// say hello
-	if (sayHello) { cat.say("Meow", catChannel) }
 
 })
 
@@ -252,8 +256,22 @@ client.on('message', (receivedMessage) => {
 
 
   // In the catbot channel
-  if (receivedMessage.channel.id == chan_catbot) {
-    replyRequired = true
+	for (var i in chan_catbot) {
+		var chan = chan_catbot[i]
+		console.log(chan.id)
+		if (receivedMessage.channel.id == chan.id) {
+			replyRequired = true
+		}
+	}
+
+	//DM
+	if (receivedMessage.channel.type == "dm") {
+		replyRequired = true
+	}
+
+	console.log(replyRequired)
+
+  if (replyRequired) { //receivedMessage.channel.id == chan_catbot
 
     // get a message from cb
     var cb_input = receivedMessage.content.toLowerCase()
