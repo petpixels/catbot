@@ -169,7 +169,7 @@ client.on('message', (receivedMessage) => {
 		if (receivedMessage.author.id == nl_item.user) {
 			// user is on the naughty list
 			console.log(nl_item)
-			receivedMessage.react("💩")
+			//receivedMessage.react("💩")
 		}
 	}
 
@@ -269,8 +269,6 @@ client.on('message', (receivedMessage) => {
 		replyRequired = true
 	}
 
-	console.log(replyRequired)
-
   if (replyRequired) { //receivedMessage.channel.id == chan_catbot
 
     // get a message from cb
@@ -280,6 +278,9 @@ client.on('message', (receivedMessage) => {
 		tmp_input.text = cb_input
     var cb_msg = cat_functions.reply(cat,receivedMessage.channel,tmp_input)
     var cb_output = []
+
+		var input_lang = catLanguageDetect(receivedMessage.content)
+		console.log(input_lang)
 
     // incoming message cannot be blank
     if (cb_msg) {
@@ -447,6 +448,22 @@ client.on('message', (receivedMessage) => {
 
   // console.log(receivedMessage.channel.id)
 })
+
+const { Language } = require('node-nlp');
+const language = new Language()
+function catLanguageDetect(msg) {
+	var lang // default to english
+
+	if (msg) {
+		let guess = language.guessBest(
+		  msg // ['de', 'es','fr','it','en','jp'],
+		)
+		console.log(guess.language)
+		lang = guess.alpha2
+	}
+
+	return lang
+}
 
 function catSentiment(msg) {
 	// give the cat a mood
