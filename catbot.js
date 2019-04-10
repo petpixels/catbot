@@ -4,7 +4,7 @@ var catbot = require('./lib/bot');
 var cat_functions = require('./lib/catbot-functions');
 var cat = new catbot()
 
-const MongoClient = require('mongodb').MongoClient
+const mongo_client = require('mongodb').MongoClient
 const db_url = bot_secret.mongo_url
 
 const discord = require('discord.js')
@@ -279,9 +279,6 @@ client.on('message', (receivedMessage) => {
     var cb_msg = cat_functions.reply(cat,receivedMessage.channel,tmp_input)
     var cb_output = []
 
-		var input_lang = catLanguageDetect(receivedMessage.content)
-		console.log(input_lang)
-
     // incoming message cannot be blank
     if (cb_msg) {
       var outputFlag = false
@@ -386,6 +383,24 @@ client.on('message', (receivedMessage) => {
 						}
 					}
 
+					// translate cat!
+					// translate meow (but not other messages)
+					var retString_tl = retString.toLowerCase()
+					if (retString_tl.includes("meow")) {
+						var retLangGuess = cat_functions.language_detect(msg)
+
+						console.log("INTERNATIONAL: " + retLangGuess)
+						retString = cat_functions.i18n(retLangGuess)
+
+						var saveLanguageGuess = {}
+						saveLanguageGuess.message = receivedMessage.content
+						saveLanguageGuess.user = receivedMessage.author.id
+						saveLanguageGuess.lang = retLangGuess
+						saveLanguageGuess.date = Math.round(+new Date()/1000) // unix datestamp
+
+						cat.insertDataMongo(saveLanguageGuess, "catbot", "guesses")
+					}
+
           cat.log("<" + receivedMessage.channel.id + "> @catbot: " + retString)
 
           if ((retString) && (!(silent))) {
@@ -449,22 +464,6 @@ client.on('message', (receivedMessage) => {
   // console.log(receivedMessage.channel.id)
 })
 
-const { Language } = require('node-nlp');
-const language = new Language()
-function catLanguageDetect(msg) {
-	var lang // default to english
-
-	if (msg) {
-		let guess = language.guessBest(
-		  msg // ['de', 'es','fr','it','en','jp'],
-		)
-		console.log(guess.language)
-		lang = guess.alpha2
-	}
-
-	return lang
-}
-
 function catSentiment(msg) {
 	// give the cat a mood
 
@@ -511,7 +510,7 @@ function catEmoji(score) {
 
 
 function logMessage(message) {
-	MongoClient.connect(db_url, function(err, client) {
+	mongo_client.connect(db_url, function(err, client) {
 		if (err) throw err
 
 		//var dictionary_db = db.db("emuji")
@@ -534,7 +533,7 @@ function logMessage(message) {
 
 function logTreat(cat_treat) {
 	var input_treat = cat_treat
-	MongoClient.connect(db_url, function(err, client) {
+	mongo_client.connect(db_url, function(err, client) {
 		if (err) throw err
 
 		//var dictionary_db = db.db("emuji")
@@ -558,7 +557,7 @@ function logTreat(cat_treat) {
 }
 
 function logDelete(message) {
-	MongoClient.connect(db_url, function(err, client) {
+	mongo_client.connect(db_url, function(err, client) {
 		if (err) throw err
 
 		//var dictionary_db = db.db("emuji")
