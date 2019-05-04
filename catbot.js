@@ -43,7 +43,7 @@ process.on('uncaughtException', function(err) {
 */
 
 client.on('ready', () => {
-	var sayHello = true
+	var sayHello = false
 
 	cat.bot_name = "Cat"
 	cat.bot_reply = "Meow"
@@ -55,22 +55,10 @@ client.on('ready', () => {
 	cat.replies = catsMeow
 	cat.log("Connected as catbot")
 
-	// locate catbot channel
-	client.guilds.forEach((guild) => {
-
-		guild.channels.forEach((channel) => {
-			console.log(` -- ${channel.name} (${channel.type}) - ${channel.id}`)
-			if (channel.name.includes("catbot")) {
-				//catChannel = channel
-				chan_catbot.push(channel)
-				cat.bot_channel = chan_catbot // this doesn't work and I don't know why
-			}
-		})
-	})
-
 	// set discord client "now playing"
 	client.user.setActivity(cat.play())
 
+	chan_catbot = findCatbotChannels()
 	for (var i in chan_catbot) {
 		var tmpChan = chan_catbot[i]
 		//console.log(tmpChan.id)
@@ -157,6 +145,9 @@ client.on('messageReactionAdd', (reaction, user) => {
 
 // Reply to messages
 client.on('message', (receivedMessage) => {
+	// update channel list
+	chan_catbot = findCatbotChannels()
+
 	var silent = false
   var replyRequired = false
 
@@ -173,7 +164,16 @@ client.on('message', (receivedMessage) => {
 		}
 	}
 
-	if (receivedMessage.author.bot == true) {
+
+	// override silent for HELPME server
+	var helpme_server = false
+	client.guilds.forEach((guild) => {
+		if (guild.name == "435763") {
+			helpme_server = true
+		}
+	})
+
+	if ((receivedMessage.author.bot == true) && (!(helpme_server))) {
 
 		// if it's the dog
 		if (receivedMessage.author.username == "DogBot") {
@@ -194,6 +194,10 @@ client.on('message', (receivedMessage) => {
 		silent = true
 		return
 	} // ignore bots
+
+	if ((helpme_server) && (receivedMessage.author.bot == false)) {
+		silent = true
+	}
 
 	var msg = receivedMessage.content;
 	cat.log(receivedMessage.channel + msg)
@@ -254,7 +258,7 @@ client.on('message', (receivedMessage) => {
 
 	}
 
-
+	
   // In the catbot channel
 	for (var i in chan_catbot) {
 		var chan = chan_catbot[i]
@@ -615,8 +619,32 @@ function getCatReplies() {
 		})
 }
 
+function findCatbotChannels() {
+	// locate catbot channel
+	chan_catbot = []
 
+	client.guilds.forEach((guild) => {
+		guild.channels.forEach((channel) => {
+			//console.log(` -- ${channel.name} (${channel.type}) - ${channel.id}`)
+			if (channel.name.includes("catbot")) {
+				//catChannel = channel
+				chan_catbot.push(channel)
+				cat.bot_channel = chan_catbot // this doesn't work and I don't know why
+			} else {
 
+				if (guild.name == "435763") {
+					if (!(channel.name.includes("welcome"))) {
+						if (channel) {
+							chan_catbot.push(channel)
+						}
+					}
+				}
+			}
+		})
+	})
+
+	return chan_catbot
+}
 
 
 client.login(bot_secret.bot_secret_token)
