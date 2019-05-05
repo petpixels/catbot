@@ -42,12 +42,6 @@ discord_bot.on('ready', () => {
     console.log(chan_general.id)
 })
 
-discord_bot.on('channelCreate', (channel) => {
-    console.log(channel)
-    channel.send("Meow")
-})
-
-
 discord_bot.on('message', (receivedMessage) => {
     var chan = receivedMessage.channel.name
     var user = receivedMessage.author.username
