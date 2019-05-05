@@ -12,29 +12,22 @@ var twilio = Botkit.twiliosmsbot({
     account_sid: bot_secret.twilio_sid,
     auth_token: bot_secret.twilio_auth_token,
     twilio_number: bot_secret.twilio_number,
-    debug: true
+    debug: false
 })
-
 var twilio_send_client = require('twilio')
 var twilio_send = new twilio_send_client(bot_secret.twilio_sid, bot_secret.twilio_auth_token)
-
 var twilio_bot = twilio.spawn({})
 
 // setup connection to discord
 var discord = require('discord.js')
 var discord_bot = new discord.Client()
-
 discord_bot.login(bot_secret.gopher_secret_token)
 
-// setup connection to mongodb 
+// setup connection to the database 
 var mongo_client = require('mongodb').MongoClient
 var db_url = bot_secret.mongo_url
 
-// various other dependencies
-var os = require('os')
-
 var chan_general = "574103231353847844"
-var chan_reply
 
 discord_bot.on('ready', () => {
 	// locate catbot channel
@@ -72,27 +65,26 @@ twilio.setupWebserver(5000, function(err, server) {
     })
 })
 
-var chan_user
 twilio.hears('.*', 'message_received', function(twilio_bot, message) {
     // ^ send this to discord and save the whole message to mongo
     var phone_number = message.from.replace("+","")
     var formatted = phone_number + ": " + message.text
 
-    var chan_user = getDiscordChannelID(phone_number)
-    console.log("USER_CHANNEL: " + chan_user)
-    
+    // get channel matching user, create it if it doesn't exist
+    var chan_user = getDiscordChannelID(phone_number)    
     if (!(chan_user)) {
-
         discord_bot.guilds.forEach((guild) => {
-			//console.log(` -- ${channel.name} (${channel.type}) - ${channel.id}`)
-            // console.log(guild)
-
-            var tmp_channel = createDiscordChannel(guild,phone_number).then(
-                //console.log("CHANNEL CREATED")
-                firstMessageToWelcomeChannel(phone_number,message.text)
-            )
-            
+            // create a new discord channel and post first message  
+            // to the #welcome channel so it's not lost
+            if (guild.name == "435763") {
+                var tmp_channel = createDiscordChannel(guild,phone_number).then(
+                    firstMessageToWelcomeChannel(phone_number,message.text)
+                )
+            }
         })
+
+        // set bot username
+        discord_bot.user.setUsername(phone_number)
     } else {
         // change username to phone number for reply
         discord_bot.user.setUsername(phone_number)
@@ -101,40 +93,26 @@ twilio.hears('.*', 'message_received', function(twilio_bot, message) {
         chan_user.send(message.text)
     }
 
-
-    // twilio_bot.reply(message, 'Meow')
-
     gopher.insertDataMongo(message,"twilio","messages")
     console.log(formatted)
 })
 
 // general functions
 
-function firstMessageToWelcomeChannel(phone_number,message) {
-    // Use user details from here
-    var chan_welcome = getDiscordChannelID("welcome")
-    var formatted = "<" + phone_number + "> " + message
-    if (chan_welcome) {
-        chan_welcome.send(formatted)
-    }
-}
-
+// get a discord channel by name 
 function getDiscordChannelID(name) {
     var retVal = 0
     discord_bot.guilds.forEach((guild) => {
-
 		guild.channels.forEach((channel) => {
-			// console.log(` -- ${channel.name} (${channel.type}) - ${channel.id}`)
 			if (channel.name.includes(name)) {
-				//catChannel = channel
 				retVal  = channel
 			}
 		})
     })
-    
     return retVal
 }
 
+// create a new discord channel
 function createDiscordChannel(guild,channel_name) {
     return new Promise(function(resolve, reject) {
 
@@ -146,4 +124,16 @@ function createDiscordChannel(guild,channel_name) {
             }
         })
     })
+}
+
+// Post the first message from a user to the welcome channel
+// since they can't post to their own channel yet as it's
+// currently being created.
+function firstMessageToWelcomeChannel(phone_number,message) {
+    // Use user details from here
+    var chan_welcome = getDiscordChannelID("welcome")
+    var formatted = "<" + phone_number + "> " + message
+    if (chan_welcome) {
+        chan_welcome.send(formatted)
+    }
 }
