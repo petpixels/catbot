@@ -1,10 +1,8 @@
-# CatBot.js
-
-### How to install catbot
+# How to install CatBot
 
 1. Clone this repo (or fork it if you plan to make changes)
 
-3. Create a bot_secret file in /lib/bot-secret.js by following these steps:
+3. Create a bot-secret file in /lib/bot-secret.js by following these steps:
 
 ```
 nano ./lib/bot_secret.js
