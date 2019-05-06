@@ -6,6 +6,7 @@ const bot_secret = require('./lib/bot-secret')
 // load common bot functions
 var bot = require('./lib/bot')
 var gopher = new bot()
+var gopher_bot_id = "574100993743126528" // shouldn't be hardcoded but is
 
 // setup connection to twilio
 var twilio = Botkit.twiliosmsbot({
@@ -30,21 +31,25 @@ var db_url = bot_secret.mongo_url
 var chan_general = "574103231353847844"
 
 discord_bot.on('ready', () => {
-	// locate catbot channel
+    // locate catbot channel
+    // discord_bot.user.setUsername("Gopher")
+
     chan_general = getDiscordChannelID("welcome")
     console.log(chan_general.id)
+
 })
 
 discord_bot.on('message', (receivedMessage) => {
     var chan = receivedMessage.channel.name
     var user = receivedMessage.author.username
+    console.log(receivedMessage.author.username + " : " + receivedMessage.author.id)
 
     if (chan == "welcome") {
 
     } else {
         var twilio_send_number = "+" + chan
         // don't duplicate messages
-        if (chan != user) {            
+        if (receivedMessage.author.id != gopher_bot_id) {
             twilio_send.messages.create({
                 "body": receivedMessage.content,
                 "to": twilio_send_number,  // Text this number
@@ -66,9 +71,12 @@ twilio.setupWebserver(5000, function(err, server) {
 })
 
 twilio.hears('.*', 'message_received', function(twilio_bot, message) {
-    // ^ send this to discord and save the whole message to mongo
+    // Send this to discord and save the whole message to mongo
     var phone_number = message.from.replace("+","")
     var formatted = phone_number + ": " + message.text
+
+    // change username to phone number for reply
+    // discord_bot.user.setUsername(phone_number)
 
     // get channel matching user, create it if it doesn't exist
     var chan_user = getDiscordChannelID(phone_number)    
@@ -82,13 +90,7 @@ twilio.hears('.*', 'message_received', function(twilio_bot, message) {
                 )
             }
         })
-
-        // set bot username
-        discord_bot.user.setUsername(phone_number)
     } else {
-        // change username to phone number for reply
-        discord_bot.user.setUsername(phone_number)
-
         // channel exists already
         chan_user.send(message.text)
     }
