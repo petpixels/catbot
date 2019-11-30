@@ -54,7 +54,7 @@ discord_client.on('ready', () => {
 
 // Say meow on new channel creation
 discord_client.on('channelCreate', (channel) => {
-	console.log(channel)
+  console.log(channel)
   cat.say(cat.bot_reply, channel)
   cat.log("New Channel Created: \"" + channel.name + "\"")
 })
@@ -156,13 +156,13 @@ discord_client.on('message', (receivedMessage) => {
 	}
 
 	// override silent for HELPME server
-	var helpme_server = false
-	if (receivedMessage.channel.guild.id == "574103231353847838") {
+	// var helpme_server = false
+	// if (receivedMessage.channel.guild.id == "574103231353847838") {
 		// also shouldn't be hardcoded
-		helpme_server = true
-	}
+	// 	helpme_server = true
+	// }
 
-	if ((receivedMessage.author.bot == true) && (!(helpme_server))) {
+	if (receivedMessage.author.bot == true) { //(!(helpme_server))
 		// if it's the dog
 		if (receivedMessage.author.username == "DogBot") {
 			var dogMsg = receivedMessage.content.toLowerCase()
@@ -183,7 +183,7 @@ discord_client.on('message', (receivedMessage) => {
 		return
 	} // ignore bots
 
-	if ((helpme_server) && (receivedMessage.author.bot == false)) {
+	if ((receivedMessage.author.bot == false)) { // && (helpme_server)
 		silent = true
 	}
 
@@ -200,6 +200,7 @@ discord_client.on('message', (receivedMessage) => {
 		console.log(chan.id)
 		if (receivedMessage.channel.id == chan.id) {
 			replyRequired = true
+                        silent = false
 		}
 	}
 
@@ -353,7 +354,7 @@ discord_client.on('message', (receivedMessage) => {
     cb_msg = cat_functions.reply(cat, {}, receivedMessage.content)
   }
 
-  // Random global meom
+  // Random global meow
   var randomGlobalReply = Math.random();
   if ((randomGlobalReply < .05) && (receivedMessage.channel.id != chan_catbot)) {
 		cat_functions.reply(receivedMessage.channel, receivedMessage.content)
